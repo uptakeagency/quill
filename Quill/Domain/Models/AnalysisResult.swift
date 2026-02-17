@@ -3,10 +3,10 @@ import Foundation
 struct AnalysisResult: Equatable {
     let mode: AnalysisMode
     let original: String
-    let corrected: String
-    let changes: [TextChange]
+    var corrected: String
+    var changes: [TextChange]
     let explanation: String?
-    let vocabularyCards: [VocabularyCard]?
+    var vocabularyCards: [VocabularyCard]?
 
     static func == (lhs: AnalysisResult, rhs: AnalysisResult) -> Bool {
         lhs.mode == rhs.mode && lhs.original == rhs.original && lhs.corrected == rhs.corrected

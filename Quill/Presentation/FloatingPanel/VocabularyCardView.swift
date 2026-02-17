@@ -2,6 +2,7 @@ import SwiftUI
 
 struct VocabularyCardView: View {
     let cards: [VocabularyCard]
+    var onUseWord: ((VocabularyCard) -> Void)?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -10,7 +11,7 @@ struct VocabularyCardView: View {
                 .foregroundStyle(.secondary)
 
             ForEach(cards) { card in
-                VocabularyCardItem(card: card)
+                VocabularyCardItem(card: card, onUse: onUseWord)
             }
         }
     }
@@ -18,6 +19,7 @@ struct VocabularyCardView: View {
 
 struct VocabularyCardItem: View {
     let card: VocabularyCard
+    var onUse: ((VocabularyCard) -> Void)?
     @State private var isExpanded = false
 
     var body: some View {
@@ -34,6 +36,12 @@ struct VocabularyCardItem: View {
                     .fontWeight(.semibold)
                     .foregroundStyle(.blue)
                 Spacer()
+                if onUse != nil {
+                    Button("Use") { onUse?(card) }
+                        .font(.system(size: 10))
+                        .buttonStyle(.bordered)
+                        .controlSize(.mini)
+                }
                 levelBadge(card.level)
                 Button {
                     withAnimation(.easeInOut(duration: 0.2)) {

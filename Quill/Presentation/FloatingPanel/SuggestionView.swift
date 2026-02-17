@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SuggestionView: View {
     let result: AnalysisResult
+    var onUseWord: ((VocabularyCard) -> Void)?
 
     /// Modes where inline diff (red strikethrough → green) makes sense
     private var usesDiff: Bool {
@@ -25,6 +26,11 @@ struct SuggestionView: View {
             // Explanation (for explain/translate/techExplain modes)
             if let explanation = result.explanation, !explanation.isEmpty {
                 explanationSection(explanation)
+            }
+
+            // Vocabulary cards
+            if let cards = result.vocabularyCards, !cards.isEmpty {
+                VocabularyCardView(cards: cards, onUseWord: onUseWord)
             }
         }
         .textSelection(.enabled)

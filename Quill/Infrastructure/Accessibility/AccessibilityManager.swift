@@ -35,7 +35,13 @@ final class AccessibilityManager: TextCaptureProtocol {
         return nil
     }
 
-    func replaceSelectedText(with text: String) async -> Bool {
+    func replaceSelectedText(with text: String, in sourceApp: NSRunningApplication? = nil) async -> Bool {
+        // Activate source app first so AX targets the correct element
+        if let app = sourceApp {
+            app.activate()
+            try? await Task.sleep(for: .milliseconds(150))
+        }
+
         if replaceSelectedTextViaAX(text) {
             return true
         }

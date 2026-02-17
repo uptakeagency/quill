@@ -51,6 +51,7 @@ final class AppState {
     var hasAPIKey = false
     var cachedResults: [AnalysisMode: AnalysisResult] = [:]
     var analysisTask: Task<Void, Never>?
+    var sourceApp: NSRunningApplication?
 
     func reset() {
         isAnalyzing = false
@@ -59,6 +60,7 @@ final class AppState {
         result = nil
         error = nil
         cachedResults.removeAll()
+        sourceApp = nil
     }
 
     var hasGeminiKey: Bool {

@@ -160,10 +160,22 @@ struct FloatingPanelView: View {
 
     @ViewBuilder
     private func resultSection(_ result: AnalysisResult) -> some View {
-        SuggestionView(result: result)
-
-        if let cards = result.vocabularyCards, !cards.isEmpty {
-            VocabularyCardView(cards: cards)
+        SuggestionView(result: result) { card in
+            guard var current = appState.result else { return }
+            // Update corrected text for Apply/Copy
+            current.corrected = current.corrected.replacingOccurrences(
+                of: card.original, with: card.suggestion
+            )
+            // Add to changes so it appears in the diff view
+            current.changes.append(TextChange(
+                original: card.original,
+                replacement: card.suggestion,
+                reason: "\(card.level) vocabulary upgrade"
+            ))
+            // Remove used card
+            current.vocabularyCards?.removeAll { $0.original == card.original }
+            appState.result = current
+            appState.cachedResults[current.mode] = current
         }
     }
 
@@ -233,9 +245,9 @@ struct FloatingPanelView: View {
                     Button("Apply") {
                         Task {
                             if let corrected = appState.result?.corrected {
-                                _ = await AccessibilityManager.shared.replaceSelectedText(with: corrected)
+                                onDismiss()
+                                _ = await AccessibilityManager.shared.replaceSelectedText(with: corrected, in: appState.sourceApp)
                             }
-                            onDismiss()
                         }
                     }
                     .buttonStyle(.borderedProminent)

@@ -57,7 +57,10 @@ struct QuillApp: App {
     private func handleHotkeyTrigger() {
         appState.analysisTask?.cancel()
         appState.analysisTask = Task { @MainActor in
+            // Remember the source app before reset clears it
+            let sourceApp = NSWorkspace.shared.frontmostApplication
             appState.reset()
+            appState.sourceApp = sourceApp
             // Refresh permission state
             appState.hasAccessibilityPermission = PermissionChecker.shared.isTrusted
 
