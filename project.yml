@@ -1,0 +1,46 @@
+name: Quill
+options:
+  bundleIdPrefix: com.c3nx
+  deploymentTarget:
+    macOS: "14.0"
+  xcodeVersion: "16.0"
+  createIntermediateGroups: true
+  defaultConfig: Debug
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+
+packages:
+  KeyboardShortcuts:
+    url: https://github.com/sindresorhus/KeyboardShortcuts
+    version: "1.9.4"
+  KeychainAccess:
+    url: https://github.com/kishikawakatsumi/KeychainAccess
+    from: "4.2.2"
+  SwiftAnthropic:
+    url: https://github.com/jamesrochabrun/SwiftAnthropic
+    from: "2.2.0"
+
+targets:
+  Quill:
+    type: application
+    platform: macOS
+    sources:
+      - path: Quill
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.c3nx.quill
+        PRODUCT_NAME: Quill
+        INFOPLIST_FILE: Quill/Info.plist
+        CODE_SIGN_ENTITLEMENTS: Quill/Quill.entitlements
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGN_STYLE: Manual
+        ENABLE_APP_SANDBOX: NO
+    dependencies:
+      - package: KeyboardShortcuts
+      - package: KeychainAccess
+      - package: SwiftAnthropic
+    entitlements:
+      path: Quill/Quill.entitlements

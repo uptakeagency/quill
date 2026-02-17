@@ -1,0 +1,473 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1F72347B6E4EAAE4F4D91351 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA105EB4B9CFB49F9B8E9541 /* SettingsView.swift */; };
+		465216FC16260E6530C81955 /* AnalysisResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFDB0D879F0BDA3FCC87716 /* AnalysisResult.swift */; };
+		5053D25318E345EF88AFFF49 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDBF7BC1C3DC657F5053C71F /* AppState.swift */; };
+		8CB30CD9FEED993B06F0AC41 /* AnalysisMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09E80E0FA4BCC19753DAA63D /* AnalysisMode.swift */; };
+		9AA64A0251A4F3BFABFB5016 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 35A98CD5D20893F1CCD285F3 /* KeychainAccess */; };
+		9E0CE5B023A8EAE7E2357F62 /* ToneStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68CDEA1F03708894DE902A6C /* ToneStyle.swift */; };
+		B0EA2C8C38D7EC013DF55067 /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = 48E495469274BFAC94820BC2 /* KeyboardShortcuts */; };
+		C41957B31D9DC1943DC005AC /* SwiftAnthropic in Frameworks */ = {isa = PBXBuildFile; productRef = 77F85861C87316B6B337502D /* SwiftAnthropic */; };
+		C73466E4197092356D716440 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42FB7D92BCEE1663AA979BAB /* Logger.swift */; };
+		C744913D975B00149A098E35 /* TextCaptureProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE64E988126AA9E731093E82 /* TextCaptureProtocol.swift */; };
+		D1CC0E91DF8481DB05CAA513 /* AIServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92AE6888C807E5E2D1FECEF /* AIServiceProtocol.swift */; };
+		D4A4486ECDF96AE03E6D8076 /* QuillApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC2BDDEC6FBD3F6622BF7272 /* QuillApp.swift */; };
+		FEEA973D93CE0A349D27791F /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4647719977DC5D1375421D31 /* MenuBarView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		09E80E0FA4BCC19753DAA63D /* AnalysisMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisMode.swift; sourceTree = "<group>"; };
+		0DBE22D21ADC2F0225DF0411 /* Quill.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Quill.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		42FB7D92BCEE1663AA979BAB /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		4647719977DC5D1375421D31 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
+		4FFDB0D879F0BDA3FCC87716 /* AnalysisResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisResult.swift; sourceTree = "<group>"; };
+		68CDEA1F03708894DE902A6C /* ToneStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToneStyle.swift; sourceTree = "<group>"; };
+		95E8C48ADF7597448F3FD904 /* Quill.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Quill.entitlements; sourceTree = "<group>"; };
+		AE64E988126AA9E731093E82 /* TextCaptureProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextCaptureProtocol.swift; sourceTree = "<group>"; };
+		CDBF7BC1C3DC657F5053C71F /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		D92AE6888C807E5E2D1FECEF /* AIServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIServiceProtocol.swift; sourceTree = "<group>"; };
+		DA105EB4B9CFB49F9B8E9541 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		EAD63CF72CB662598A5A279F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		FC2BDDEC6FBD3F6622BF7272 /* QuillApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuillApp.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FB3C5DE1C2E5C943BC23D630 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B0EA2C8C38D7EC013DF55067 /* KeyboardShortcuts in Frameworks */,
+				9AA64A0251A4F3BFABFB5016 /* KeychainAccess in Frameworks */,
+				C41957B31D9DC1943DC005AC /* SwiftAnthropic in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		039D8D60F3BF8AB7113265C0 /* Quill */ = {
+			isa = PBXGroup;
+			children = (
+				EAD63CF72CB662598A5A279F /* Info.plist */,
+				95E8C48ADF7597448F3FD904 /* Quill.entitlements */,
+				FC2BDDEC6FBD3F6622BF7272 /* QuillApp.swift */,
+				2AF7D53C213073DF8286D78C /* App */,
+				37707994FC56AA9F1A09D82A /* Domain */,
+				2C53C76F5CF8F94FD5438ECC /* Infrastructure */,
+				0904A3315E6BB24304755E72 /* Presentation */,
+				FFFDC32611A4EDFA0B615349 /* Utilities */,
+			);
+			path = Quill;
+			sourceTree = "<group>";
+		};
+		0904A3315E6BB24304755E72 /* Presentation */ = {
+			isa = PBXGroup;
+			children = (
+				A68CBE2937ED9EB7AF99C32E /* MenuBar */,
+				FF1F343DD22ADEE1FC46AD00 /* Settings */,
+			);
+			path = Presentation;
+			sourceTree = "<group>";
+		};
+		11A5640BD9F0DB9A04334BEE /* Ports */ = {
+			isa = PBXGroup;
+			children = (
+				D92AE6888C807E5E2D1FECEF /* AIServiceProtocol.swift */,
+				AE64E988126AA9E731093E82 /* TextCaptureProtocol.swift */,
+			);
+			path = Ports;
+			sourceTree = "<group>";
+		};
+		2AF7D53C213073DF8286D78C /* App */ = {
+			isa = PBXGroup;
+			children = (
+				CDBF7BC1C3DC657F5053C71F /* AppState.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		2C53C76F5CF8F94FD5438ECC /* Infrastructure */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Infrastructure;
+			sourceTree = "<group>";
+		};
+		37707994FC56AA9F1A09D82A /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				DE675401504FEBD928B8DF91 /* Models */,
+				11A5640BD9F0DB9A04334BEE /* Ports */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
+		574FA7F4F56686AF305E9580 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0DBE22D21ADC2F0225DF0411 /* Quill.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		577859B0867F82EBE76535CA = {
+			isa = PBXGroup;
+			children = (
+				039D8D60F3BF8AB7113265C0 /* Quill */,
+				574FA7F4F56686AF305E9580 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A68CBE2937ED9EB7AF99C32E /* MenuBar */ = {
+			isa = PBXGroup;
+			children = (
+				4647719977DC5D1375421D31 /* MenuBarView.swift */,
+			);
+			path = MenuBar;
+			sourceTree = "<group>";
+		};
+		DE675401504FEBD928B8DF91 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				09E80E0FA4BCC19753DAA63D /* AnalysisMode.swift */,
+				4FFDB0D879F0BDA3FCC87716 /* AnalysisResult.swift */,
+				68CDEA1F03708894DE902A6C /* ToneStyle.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		FF1F343DD22ADEE1FC46AD00 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				DA105EB4B9CFB49F9B8E9541 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		FFFDC32611A4EDFA0B615349 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				42FB7D92BCEE1663AA979BAB /* Logger.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		7DEF7B1DAF0532C32746D151 /* Quill */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 626C6C6011A78070956F318B /* Build configuration list for PBXNativeTarget "Quill" */;
+			buildPhases = (
+				7A1334224C98F7465D65136E /* Sources */,
+				FB3C5DE1C2E5C943BC23D630 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Quill;
+			packageProductDependencies = (
+				48E495469274BFAC94820BC2 /* KeyboardShortcuts */,
+				35A98CD5D20893F1CCD285F3 /* KeychainAccess */,
+				77F85861C87316B6B337502D /* SwiftAnthropic */,
+			);
+			productName = Quill;
+			productReference = 0DBE22D21ADC2F0225DF0411 /* Quill.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1D419A2DB66B4CDAD3E67ECA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					7DEF7B1DAF0532C32746D151 = {
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = 687645BADF2A1CD9BA5D6451 /* Build configuration list for PBXProject "Quill" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 577859B0867F82EBE76535CA;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				D5C54F20042F749EAA5B9A3A /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
+				69945B5E5F491BCFEF58FDC4 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
+				19322F18DC972081A16B85B6 /* XCRemoteSwiftPackageReference "SwiftAnthropic" */,
+			);
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7DEF7B1DAF0532C32746D151 /* Quill */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7A1334224C98F7465D65136E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D1CC0E91DF8481DB05CAA513 /* AIServiceProtocol.swift in Sources */,
+				8CB30CD9FEED993B06F0AC41 /* AnalysisMode.swift in Sources */,
+				465216FC16260E6530C81955 /* AnalysisResult.swift in Sources */,
+				5053D25318E345EF88AFFF49 /* AppState.swift in Sources */,
+				C73466E4197092356D716440 /* Logger.swift in Sources */,
+				FEEA973D93CE0A349D27791F /* MenuBarView.swift in Sources */,
+				D4A4486ECDF96AE03E6D8076 /* QuillApp.swift in Sources */,
+				1F72347B6E4EAAE4F4D91351 /* SettingsView.swift in Sources */,
+				C744913D975B00149A098E35 /* TextCaptureProtocol.swift in Sources */,
+				9E0CE5B023A8EAE7E2357F62 /* ToneStyle.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		0557A5149EC172623E0B7934 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Quill/Quill.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_APP_SANDBOX = NO;
+				INFOPLIST_FILE = Quill/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.c3nx.quill;
+				PRODUCT_NAME = Quill;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		76D9E6709DC61788E7520A2A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Quill/Quill.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_APP_SANDBOX = NO;
+				INFOPLIST_FILE = Quill/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.c3nx.quill;
+				PRODUCT_NAME = Quill;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		8A763C425FD4792EF7303A2B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		A400322D05324A78FD2366A3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		626C6C6011A78070956F318B /* Build configuration list for PBXNativeTarget "Quill" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				76D9E6709DC61788E7520A2A /* Debug */,
+				0557A5149EC172623E0B7934 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		687645BADF2A1CD9BA5D6451 /* Build configuration list for PBXProject "Quill" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8A763C425FD4792EF7303A2B /* Debug */,
+				A400322D05324A78FD2366A3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		19322F18DC972081A16B85B6 /* XCRemoteSwiftPackageReference "SwiftAnthropic" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/jamesrochabrun/SwiftAnthropic";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.9.0;
+			};
+		};
+		69945B5E5F491BCFEF58FDC4 /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.2.2;
+			};
+		};
+		D5C54F20042F749EAA5B9A3A /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/KeyboardShortcuts";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		35A98CD5D20893F1CCD285F3 /* KeychainAccess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 69945B5E5F491BCFEF58FDC4 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			productName = KeychainAccess;
+		};
+		48E495469274BFAC94820BC2 /* KeyboardShortcuts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D5C54F20042F749EAA5B9A3A /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */;
+			productName = KeyboardShortcuts;
+		};
+		77F85861C87316B6B337502D /* SwiftAnthropic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 19322F18DC972081A16B85B6 /* XCRemoteSwiftPackageReference "SwiftAnthropic" */;
+			productName = SwiftAnthropic;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 1D419A2DB66B4CDAD3E67ECA /* Project object */;
+}
