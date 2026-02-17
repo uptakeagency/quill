@@ -45,7 +45,7 @@ The floating panel appears near your cursor without stealing focus from your cur
 ### From Source
 
 ```bash
-git clone https://github.com/uptake-agency/quill.git
+git clone https://github.com/uptakeagency/quill.git
 cd quill
 
 # Build and create .app bundle
