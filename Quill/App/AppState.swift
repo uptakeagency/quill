@@ -33,10 +33,18 @@ final class AppState {
     var visibleExplanationLevels: Set<ExplanationLevel> = ExplanationLevel.defaultVisible {
         didSet { saveVisibleLevels() }
     }
-    var aiBackend: AIBackend = .gemini
-    var nativeLanguage: String = "English"
-    var targetLanguage: String = "English"
-    var geminiModel: String = "gemini-2.5-flash"
+    var aiBackend: AIBackend = .gemini {
+        didSet { UserDefaults.standard.set(aiBackend.rawValue, forKey: "aiBackend") }
+    }
+    var nativeLanguage: String = "English" {
+        didSet { UserDefaults.standard.set(nativeLanguage, forKey: "nativeLanguage") }
+    }
+    var targetLanguage: String = "English" {
+        didSet { UserDefaults.standard.set(targetLanguage, forKey: "targetLanguage") }
+    }
+    var geminiModel: String = "gemini-2.5-flash" {
+        didSet { UserDefaults.standard.set(geminiModel, forKey: "geminiModel") }
+    }
     var availableGeminiModels: [String] = [
         "gemini-2.5-flash",
         "gemini-2.5-flash-lite",
@@ -75,6 +83,7 @@ final class AppState {
 
     init() {
         loadVisibleLevels()
+        loadPreferences()
     }
 
     func createAIService() -> AIServiceProtocol? {
@@ -97,6 +106,22 @@ final class AppState {
     private func saveVisibleLevels() {
         let rawValues = visibleExplanationLevels.map(\.rawValue)
         UserDefaults.standard.set(rawValues, forKey: AppState.visibleLevelsKey)
+    }
+
+    private func loadPreferences() {
+        if let backend = UserDefaults.standard.string(forKey: "aiBackend"),
+           let parsed = AIBackend(rawValue: backend) {
+            aiBackend = parsed
+        }
+        if let lang = UserDefaults.standard.string(forKey: "nativeLanguage") {
+            nativeLanguage = lang
+        }
+        if let lang = UserDefaults.standard.string(forKey: "targetLanguage") {
+            targetLanguage = lang
+        }
+        if let model = UserDefaults.standard.string(forKey: "geminiModel") {
+            geminiModel = model
+        }
     }
 
     private func loadVisibleLevels() {

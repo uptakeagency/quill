@@ -20,7 +20,11 @@ struct MarkdownTextView: View {
                 onTermTap?(term)
                 return .handled
             }
-            return .systemAction
+            // Only allow https links to open in browser (block file://, javascript:, etc.)
+            if url.scheme == "https" {
+                return .systemAction
+            }
+            return .discarded
         })
     }
 
@@ -113,13 +117,19 @@ struct MarkdownTextView: View {
         )) ?? AttributedString(processed)
     }
 
-    /// Replace [[term]] with [term](quill://explain/term) markdown links
+    /// Replace [[term]] with [term](quill://explain/encoded) markdown links
     private func convertTermLinks(_ text: String) -> String {
-        text.replacingOccurrences(
-            of: "\\[\\[([^\\]]+)\\]\\]",
-            with: "[$1](quill://explain/$1)",
-            options: .regularExpression
-        )
+        guard let regex = try? NSRegularExpression(pattern: "\\[\\[([^\\]]+)\\]\\]") else { return text }
+        let nsText = text as NSString
+        var result = text
+        // Iterate in reverse to preserve range offsets
+        for match in regex.matches(in: text, range: NSRange(location: 0, length: nsText.length)).reversed() {
+            let term = nsText.substring(with: match.range(at: 1))
+            let encoded = term.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? term
+            let replacement = "[\(term)](quill://explain/\(encoded))"
+            result = (result as NSString).replacingCharacters(in: match.range, with: replacement)
+        }
+        return result
     }
 
     // MARK: - Renderer

@@ -123,7 +123,8 @@ struct QuillApp: App {
     private func reanalyze(mode: AnalysisMode) {
         let text = appState.originalText
         guard !text.isEmpty else { return }
-        Task { @MainActor in
+        appState.analysisTask?.cancel()
+        appState.analysisTask = Task { @MainActor in
             await performAnalysis(text: text, mode: mode)
         }
     }
@@ -182,6 +183,7 @@ struct QuillApp: App {
         appState.result = nil
         appState.error = nil
         appState.isAnalyzing = true
+        defer { appState.isAnalyzing = false }
         do {
             let context = appState.sentenceContext.isEmpty ? nil : appState.sentenceContext
             let result = try await service.analyze(
@@ -200,7 +202,6 @@ struct QuillApp: App {
         } catch {
             appState.error = .networkError(error.localizedDescription)
         }
-        appState.isAnalyzing = false
     }
 
     private func performAnalysis(text: String, mode: AnalysisMode) async {
@@ -220,6 +221,7 @@ struct QuillApp: App {
         appState.result = nil
         appState.error = nil
         appState.isAnalyzing = true
+        defer { appState.isAnalyzing = false }
         do {
             let tone: ToneStyle? = mode == .improve ? appState.selectedTone : nil
             let context = appState.sentenceContext.isEmpty ? nil : appState.sentenceContext
@@ -236,6 +238,5 @@ struct QuillApp: App {
         } catch {
             appState.error = .networkError(error.localizedDescription)
         }
-        appState.isAnalyzing = false
     }
 }

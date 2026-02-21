@@ -108,7 +108,10 @@ final class FloatingPanelController {
         let mouseLocation = NSEvent.mouseLocation
 
         // Find the screen containing the cursor
-        let screen = NSScreen.screens.first(where: { $0.frame.contains(mouseLocation) }) ?? NSScreen.main!
+        guard let screen = NSScreen.screens.first(where: { $0.frame.contains(mouseLocation) })
+                ?? NSScreen.main ?? NSScreen.screens.first else {
+            return NSRect(x: 100, y: 100, width: width, height: height)
+        }
         let screenFrame = screen.visibleFrame
 
         // Position panel near cursor, with offset

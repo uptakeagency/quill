@@ -97,13 +97,38 @@ enum ClaudeResponseParser {
             return String(text[startRange.upperBound..<endRange.lowerBound])
         }
 
-        // Try to find JSON between { and }
+        // Try to find JSON by matching braces from the first {
         if let start = text.firstIndex(of: "{"),
-           let end = text.lastIndex(of: "}") {
+           let end = findMatchingBrace(in: text, from: start) {
             return String(text[start...end])
         }
 
         return text
+    }
+
+    /// Find the matching closing brace for an opening { at the given index,
+    /// respecting nesting and string literals.
+    private static func findMatchingBrace(in text: String, from start: String.Index) -> String.Index? {
+        var depth = 0
+        var inString = false
+        var escaped = false
+        var lastClose: String.Index?
+
+        for idx in text[start...].indices {
+            let ch = text[idx]
+            if escaped { escaped = false; continue }
+            if ch == "\\" && inString { escaped = true; continue }
+            if ch == "\"" { inString.toggle(); continue }
+            guard !inString else { continue }
+            if ch == "{" { depth += 1 }
+            if ch == "}" {
+                depth -= 1
+                if depth == 0 { return idx }
+                lastClose = idx
+            }
+        }
+        // Fallback: return the last } found if braces didn't balance
+        return lastClose
     }
 
     /// Escape literal newlines/tabs inside JSON string values

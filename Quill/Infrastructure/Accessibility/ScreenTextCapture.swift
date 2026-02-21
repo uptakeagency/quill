@@ -271,7 +271,12 @@ final class ScreenTextCapture {
             request.recognitionLanguages = ["en", "tr"]
 
             let handler = VNImageRequestHandler(cgImage: image, options: [:])
-            try? handler.perform([request])
+            do {
+                try handler.perform([request])
+            } catch {
+                Log.general.error("Vision OCR failed: \(error.localizedDescription)")
+                continuation.resume(returning: [])
+            }
         }
     }
 

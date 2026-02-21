@@ -143,7 +143,7 @@ struct SuggestionView: View {
                 .foregroundStyle(.secondary)
             VStack(alignment: .leading, spacing: 4) {
                 ForEach(resources) { link in
-                    if let url = URL(string: link.url) {
+                    if let url = URL(string: link.url), url.scheme == "https" {
                         Link(destination: url) {
                             HStack(spacing: 6) {
                                 Image(systemName: "link")

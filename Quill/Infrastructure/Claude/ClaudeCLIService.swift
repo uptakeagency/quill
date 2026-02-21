@@ -36,11 +36,14 @@ final class ClaudeCLIService: AIServiceProtocol {
     private func runClaude(prompt: String, model: String) async throws -> String {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: claudePath)
+
+        // Pass prompt via stdin to avoid exposing user text in process arguments (visible via ps)
+        let stdin = Pipe()
+        process.standardInput = stdin
         process.arguments = [
             "-p",
             "--output-format", "json",
-            "--model", model,
-            prompt
+            "--model", model
         ]
 
         // Clean environment to avoid nesting issues
@@ -57,20 +60,31 @@ final class ClaudeCLIService: AIServiceProtocol {
 
         try process.run()
 
+        // Write prompt to stdin and close
+        stdin.fileHandleForWriting.write(prompt.data(using: .utf8) ?? Data())
+        stdin.fileHandleForWriting.closeFile()
+
         return try await withCheckedThrowingContinuation { continuation in
+            // Timeout: terminate process after 60 seconds
+            let timeoutWork = DispatchWorkItem { [weak process] in
+                guard let process, process.isRunning else { return }
+                process.terminate()
+            }
+            DispatchQueue.global().asyncAfter(deadline: .now() + 60, execute: timeoutWork)
+
             process.terminationHandler = { _ in
+                timeoutWork.cancel()
                 let data = stdout.fileHandleForReading.readDataToEndOfFile()
 
                 guard process.terminationStatus == 0 else {
                     let errorData = stderr.fileHandleForReading.readDataToEndOfFile()
-                    let errorMsg = String(data: errorData, encoding: .utf8) ?? "Unknown CLI error"
+                    let errorMsg = String(data: errorData, encoding: .utf8)?.prefix(200) ?? "Unknown CLI error"
                     continuation.resume(throwing: QuillError.networkError("claude CLI: \(errorMsg)"))
                     return
                 }
 
                 guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                       let result = json["result"] as? String else {
-                    // Fallback: treat entire output as text
                     let raw = String(data: data, encoding: .utf8) ?? ""
                     continuation.resume(returning: raw)
                     return
