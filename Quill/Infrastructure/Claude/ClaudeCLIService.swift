@@ -20,8 +20,8 @@ final class ClaudeCLIService: AIServiceProtocol {
             ?? "\(home)/.local/bin/claude"
     }()
 
-    func analyze(text: String, mode: AnalysisMode, tone: ToneStyle?, sentenceContext: String? = nil, nativeLanguage: String? = nil, targetLanguage: String? = nil) async throws -> AnalysisResult {
-        let systemPrompt = ClaudePrompts.systemPrompt(for: mode)
+    func analyze(text: String, mode: AnalysisMode, tone: ToneStyle?, sentenceContext: String? = nil, nativeLanguage: String? = nil, targetLanguage: String? = nil, explanationLevel: ExplanationLevel? = nil) async throws -> AnalysisResult {
+        let systemPrompt = ClaudePrompts.systemPrompt(for: mode, explanationLevel: explanationLevel)
         let userPrompt = ClaudePrompts.userPrompt(for: mode, text: text, tone: tone, sentenceContext: sentenceContext, nativeLanguage: nativeLanguage, targetLanguage: targetLanguage)
         let fullPrompt = "\(systemPrompt)\n\n\(userPrompt)"
 

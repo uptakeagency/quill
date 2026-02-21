@@ -1,9 +1,11 @@
 import SwiftUI
 
 /// Lightweight markdown renderer for AI explanation text.
-/// Supports headings, code blocks, bold/italic/code inline, and bullet/numbered lists.
+/// Supports headings, code blocks, bold/italic/code inline, bullet/numbered lists,
+/// and clickable [[term]] links for tech dictionary drill-down.
 struct MarkdownTextView: View {
     let text: String
+    var onTermTap: ((String) -> Void)?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -12,6 +14,14 @@ struct MarkdownTextView: View {
             }
         }
         .textSelection(.enabled)
+        .environment(\.openURL, OpenURLAction { url in
+            if url.scheme == "quill", url.host == "explain",
+               let term = url.pathComponents.dropFirst().first?.removingPercentEncoding {
+                onTermTap?(term)
+                return .handled
+            }
+            return .systemAction
+        })
     }
 
     // MARK: - Block Types
@@ -93,12 +103,23 @@ struct MarkdownTextView: View {
         return blocks
     }
 
-    /// Parse inline markdown (bold, italic, code) into AttributedString
+    /// Parse inline markdown (bold, italic, code) into AttributedString.
+    /// Converts [[term]] markers into clickable quill://explain/ links.
     private func inlineMarkdown(_ text: String) -> AttributedString {
-        (try? AttributedString(
-            markdown: text,
+        let processed = convertTermLinks(text)
+        return (try? AttributedString(
+            markdown: processed,
             options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace)
-        )) ?? AttributedString(text)
+        )) ?? AttributedString(processed)
+    }
+
+    /// Replace [[term]] with [term](quill://explain/term) markdown links
+    private func convertTermLinks(_ text: String) -> String {
+        text.replacingOccurrences(
+            of: "\\[\\[([^\\]]+)\\]\\]",
+            with: "[$1](quill://explain/$1)",
+            options: .regularExpression
+        )
     }
 
     // MARK: - Renderer

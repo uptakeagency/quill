@@ -6,6 +6,8 @@ struct AnalysisResult: Equatable {
     var corrected: String
     var changes: [TextChange]
     let explanation: String?
+    let tldr: String?
+    let resources: [ResourceLink]?
     var vocabularyCards: [VocabularyCard]?
 
     static func == (lhs: AnalysisResult, rhs: AnalysisResult) -> Bool {
@@ -21,6 +23,16 @@ struct TextChange: Codable, Identifiable {
 
     enum CodingKeys: String, CodingKey {
         case original, replacement, reason
+    }
+}
+
+struct ResourceLink: Codable, Identifiable, Equatable {
+    var id = UUID()
+    let title: String
+    let url: String
+
+    enum CodingKeys: String, CodingKey {
+        case title, url
     }
 }
 

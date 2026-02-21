@@ -3,6 +3,7 @@ import SwiftUI
 struct SuggestionView: View {
     let result: AnalysisResult
     var onUseWord: ((VocabularyCard) -> Void)?
+    var onTermTap: ((String) -> Void)?
 
     /// Modes where inline diff (red strikethrough → green) makes sense
     private var usesDiff: Bool {
@@ -23,9 +24,19 @@ struct SuggestionView: View {
                 changesSection
             }
 
+            // TL;DR (techExplain mode)
+            if let tldr = result.tldr, !tldr.isEmpty {
+                tldrSection(tldr)
+            }
+
             // Explanation (for explain/translate/techExplain modes)
             if let explanation = result.explanation, !explanation.isEmpty {
                 explanationSection(explanation)
+            }
+
+            // Resource links (techExplain mode)
+            if let resources = result.resources, !resources.isEmpty {
+                resourcesSection(resources)
             }
 
             // Vocabulary cards
@@ -110,12 +121,60 @@ struct SuggestionView: View {
         }
     }
 
+    private func tldrSection(_ text: String) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: "bolt.fill")
+                .font(.caption)
+                .foregroundStyle(.orange)
+            Text(text)
+                .font(.callout)
+                .foregroundStyle(.primary)
+        }
+        .padding(8)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.orange.opacity(0.08))
+        .clipShape(RoundedRectangle(cornerRadius: 6))
+    }
+
+    private func resourcesSection(_ resources: [ResourceLink]) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("Resources")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 4) {
+                ForEach(resources) { link in
+                    if let url = URL(string: link.url) {
+                        Link(destination: url) {
+                            HStack(spacing: 6) {
+                                Image(systemName: "link")
+                                    .font(.caption)
+                                Text(link.title)
+                                    .font(.callout)
+                                    .lineLimit(1)
+                                Spacer()
+                                Text(url.host ?? "")
+                                    .font(.caption2)
+                                    .foregroundStyle(.tertiary)
+                            }
+                            .foregroundStyle(.blue)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+            .padding(8)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.gray.opacity(0.06))
+            .clipShape(RoundedRectangle(cornerRadius: 6))
+        }
+    }
+
     private func explanationSection(_ text: String) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text("Explanation")
                 .font(.caption)
                 .foregroundStyle(.secondary)
-            MarkdownTextView(text: text)
+            MarkdownTextView(text: text, onTermTap: onTermTap)
                 .padding(8)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Color.blue.opacity(0.05))

@@ -28,6 +28,11 @@ enum AIBackend: String, CaseIterable, Identifiable {
 final class AppState {
     var selectedMode: AnalysisMode = .improve
     var selectedTone: ToneStyle?
+    var selectedExplanationLevel: ExplanationLevel = .eli15
+    var techDictionary = TechDictionaryState()
+    var visibleExplanationLevels: Set<ExplanationLevel> = ExplanationLevel.defaultVisible {
+        didSet { saveVisibleLevels() }
+    }
     var aiBackend: AIBackend = .gemini
     var nativeLanguage: String = "English"
     var targetLanguage: String = "English"
@@ -61,10 +66,15 @@ final class AppState {
         error = nil
         cachedResults.removeAll()
         sourceApp = nil
+        techDictionary.reset()
     }
 
     var hasGeminiKey: Bool {
         KeychainManager.shared.getGeminiKey() != nil
+    }
+
+    init() {
+        loadVisibleLevels()
     }
 
     func createAIService() -> AIServiceProtocol? {
@@ -77,6 +87,28 @@ final class AppState {
         case .claudeAPI:
             guard let apiKey = KeychainManager.shared.getAPIKey() else { return nil }
             return ClaudeService(apiKey: apiKey)
+        }
+    }
+
+    // MARK: - Persistence
+
+    private static let visibleLevelsKey = "visibleExplanationLevels"
+
+    private func saveVisibleLevels() {
+        let rawValues = visibleExplanationLevels.map(\.rawValue)
+        UserDefaults.standard.set(rawValues, forKey: AppState.visibleLevelsKey)
+    }
+
+    private func loadVisibleLevels() {
+        guard let rawValues = UserDefaults.standard.stringArray(forKey: AppState.visibleLevelsKey) else { return }
+        let levels = rawValues.compactMap { ExplanationLevel(rawValue: $0) }
+        if !levels.isEmpty {
+            visibleExplanationLevels = Set(levels)
+            // Ensure selected level is still visible
+            if !visibleExplanationLevels.contains(selectedExplanationLevel),
+               let first = ExplanationLevel.allCases.first(where: { visibleExplanationLevels.contains($0) }) {
+                selectedExplanationLevel = first
+            }
         }
     }
 }

@@ -128,6 +128,50 @@ struct GeneralSettingsView: View {
                     .foregroundStyle(.secondary)
             }
 
+            Section("Tech Dictionary Levels") {
+                ForEach(ExplanationLevel.allCases) { level in
+                    Toggle(isOn: Binding(
+                        get: { appState.visibleExplanationLevels.contains(level) },
+                        set: { enabled in
+                            if enabled {
+                                appState.visibleExplanationLevels.insert(level)
+                            } else if appState.visibleExplanationLevels.count > 1 {
+                                appState.visibleExplanationLevels.remove(level)
+                                // If removed level was selected, switch to first visible
+                                if appState.selectedExplanationLevel == level,
+                                   let first = ExplanationLevel.allCases.first(where: { appState.visibleExplanationLevels.contains($0) }) {
+                                    appState.selectedExplanationLevel = first
+                                }
+                            }
+                        }
+                    )) {
+                        HStack(spacing: 6) {
+                            Image(systemName: level.icon)
+                                .frame(width: 16)
+                            VStack(alignment: .leading) {
+                                Text(level.title)
+                                Text(levelDescription(level))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                }
+
+                Text("Choose which explanation levels appear in Tech mode.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                HStack {
+                    Button("Clear Cache") {
+                        appState.techDictionary.clearCache()
+                    }
+                    Text("\(appState.techDictionary.cache.count) cached explanations")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
             Section("Accessibility") {
                 if appState.hasAccessibilityPermission {
                     Label("Permission granted", systemImage: "checkmark.circle.fill")
@@ -151,6 +195,16 @@ struct GeneralSettingsView: View {
         "Greek", "Hindi", "Italian", "Japanese", "Korean", "Persian",
         "Polish", "Portuguese", "Russian", "Spanish", "Swedish", "Turkish", "Ukrainian"
     ]
+
+    private func levelDescription(_ level: ExplanationLevel) -> String {
+        switch level {
+        case .eli5: "Super simple, like explaining to a child"
+        case .eli15: "Clear with some technical terms"
+        case .professional: "Advanced, with trade-offs and patterns"
+        case .samples: "Practical code examples"
+        case .resources: "Learning path and best practices"
+        }
+    }
 
     private func fetchLatestModels() {
         guard let key = KeychainManager.shared.getGeminiKey() else { return }

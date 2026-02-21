@@ -10,8 +10,8 @@ final class GeminiService: AIServiceProtocol {
         self.model = model
     }
 
-    func analyze(text: String, mode: AnalysisMode, tone: ToneStyle?, sentenceContext: String? = nil, nativeLanguage: String? = nil, targetLanguage: String? = nil) async throws -> AnalysisResult {
-        let systemPrompt = ClaudePrompts.systemPrompt(for: mode)
+    func analyze(text: String, mode: AnalysisMode, tone: ToneStyle?, sentenceContext: String? = nil, nativeLanguage: String? = nil, targetLanguage: String? = nil, explanationLevel: ExplanationLevel? = nil) async throws -> AnalysisResult {
+        let systemPrompt = ClaudePrompts.systemPrompt(for: mode, explanationLevel: explanationLevel)
         let userPrompt = ClaudePrompts.userPrompt(for: mode, text: text, tone: tone, sentenceContext: sentenceContext, nativeLanguage: nativeLanguage, targetLanguage: targetLanguage)
         Log.ai.info("Sending \(mode.rawValue) request to Gemini (\(self.model))")
 

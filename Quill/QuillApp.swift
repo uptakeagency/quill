@@ -55,6 +55,14 @@ struct QuillApp: App {
     }
 
     private func handleHotkeyTrigger() {
+        // If panel is visible in techExplain mode, try drill-down instead of full reset
+        if FloatingPanelController.shared.isVisible && appState.selectedMode == .techExplain {
+            if let term = getDrillDownTerm(), !term.isEmpty {
+                explainTerm(term)
+                return
+            }
+        }
+
         appState.analysisTask?.cancel()
         appState.analysisTask = Task { @MainActor in
             // Remember the source app before reset clears it
@@ -102,9 +110,11 @@ struct QuillApp: App {
                 appState.selectedMode = .translate
             }
 
-            FloatingPanelController.shared.show(appState: appState) { [self] newMode in
-                reanalyze(mode: newMode)
-            }
+            FloatingPanelController.shared.show(
+                appState: appState,
+                onReanalyze: { [self] newMode in reanalyze(mode: newMode) },
+                onExplainTerm: { [self] term in explainTerm(term) }
+            )
 
             await performAnalysis(text: finalText, mode: appState.selectedMode)
         }
@@ -137,8 +147,71 @@ struct QuillApp: App {
         return detected == nativeLang
     }
 
+    /// Get selected text for drill-down: try panel selection first, then AX from source app
+    private func getDrillDownTerm() -> String? {
+        // Try panel's own text selection (user selected text in the explanation)
+        if let panelText = FloatingPanelController.shared.getSelectedText() {
+            let trimmed = panelText.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !trimmed.isEmpty { return trimmed }
+        }
+        return nil
+    }
+
+    private func explainTerm(_ term: String) {
+        Task { @MainActor in
+            await performTechExplain(term: term, level: appState.selectedExplanationLevel)
+        }
+    }
+
+    private func performTechExplain(term: String, level: ExplanationLevel) async {
+        // Check cache first
+        if let cached = appState.techDictionary.cachedValue(for: term, level: level) {
+            let explanation = TechExplanation(term: term, level: level, explanation: cached.explanation, tldr: cached.tldr, resources: cached.resources)
+            appState.techDictionary.push(explanation)
+            let result = AnalysisResult(mode: .techExplain, original: term, corrected: term, changes: [], explanation: cached.explanation, tldr: cached.tldr, resources: cached.resources)
+            appState.result = result
+            appState.cachedResults[.techExplain] = result
+            return
+        }
+
+        guard let service = appState.createAIService() else {
+            appState.error = .noAPIKey
+            return
+        }
+
+        appState.result = nil
+        appState.error = nil
+        appState.isAnalyzing = true
+        do {
+            let context = appState.sentenceContext.isEmpty ? nil : appState.sentenceContext
+            let result = try await service.analyze(
+                text: term, mode: .techExplain, tone: nil, sentenceContext: context,
+                nativeLanguage: appState.nativeLanguage, targetLanguage: appState.targetLanguage,
+                explanationLevel: level
+            )
+            guard !Task.isCancelled else { return }
+            let explanationText = result.explanation ?? ""
+            let explanation = TechExplanation(term: term, level: level, explanation: explanationText, tldr: result.tldr, resources: result.resources)
+            appState.techDictionary.push(explanation)
+            appState.result = result
+            appState.cachedResults[.techExplain] = result
+        } catch let apiError as APIError {
+            appState.error = .networkError(apiError.displayDescription)
+        } catch {
+            appState.error = .networkError(error.localizedDescription)
+        }
+        appState.isAnalyzing = false
+    }
+
     private func performAnalysis(text: String, mode: AnalysisMode) async {
         guard !Task.isCancelled else { return }
+
+        // For techExplain, use the dedicated drill-down flow
+        if mode == .techExplain {
+            await performTechExplain(term: text, level: appState.selectedExplanationLevel)
+            return
+        }
+
         guard let service = appState.createAIService() else {
             appState.error = .noAPIKey
             return
@@ -152,7 +225,8 @@ struct QuillApp: App {
             let context = appState.sentenceContext.isEmpty ? nil : appState.sentenceContext
             let result = try await service.analyze(
                 text: text, mode: mode, tone: tone, sentenceContext: context,
-                nativeLanguage: appState.nativeLanguage, targetLanguage: appState.targetLanguage
+                nativeLanguage: appState.nativeLanguage, targetLanguage: appState.targetLanguage,
+                explanationLevel: nil
             )
             guard !Task.isCancelled else { return }
             appState.result = result

@@ -40,7 +40,7 @@ final class FloatingPanelController {
     private var escMonitor: Any?
     var isVisible = false
 
-    func show(appState: AppState, onReanalyze: ((AnalysisMode) -> Void)? = nil) {
+    func show(appState: AppState, onReanalyze: ((AnalysisMode) -> Void)? = nil, onExplainTerm: ((String) -> Void)? = nil) {
         let panelWidth: CGFloat = 420
         let panelHeight: CGFloat = 380
 
@@ -54,7 +54,8 @@ final class FloatingPanelController {
             rootView: FloatingPanelView(
                 appState: appState,
                 onDismiss: { [weak self] in self?.hide() },
-                onReanalyze: onReanalyze
+                onReanalyze: onReanalyze,
+                onExplainTerm: onExplainTerm
             )
         )
 
@@ -74,6 +75,27 @@ final class FloatingPanelController {
             }
             return event
         }
+    }
+
+    /// Find selected text within the panel's view hierarchy (SwiftUI text selection uses NSTextView)
+    func getSelectedText() -> String? {
+        guard let contentView = panel?.contentView else { return nil }
+        return findSelectedText(in: contentView)
+    }
+
+    private func findSelectedText(in view: NSView) -> String? {
+        if let textView = view as? NSTextView {
+            let range = textView.selectedRange()
+            if range.length > 0 {
+                return (textView.string as NSString).substring(with: range)
+            }
+        }
+        for subview in view.subviews {
+            if let found = findSelectedText(in: subview) {
+                return found
+            }
+        }
+        return nil
     }
 
     func hide() {

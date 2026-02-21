@@ -4,6 +4,7 @@ struct FloatingPanelView: View {
     @Bindable var appState: AppState
     var onDismiss: () -> Void
     var onReanalyze: ((AnalysisMode) -> Void)?
+    var onExplainTerm: ((String) -> Void)?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -12,6 +13,12 @@ struct FloatingPanelView: View {
             ModePickerView(selectedMode: $appState.selectedMode)
             if appState.selectedMode == .improve {
                 toneSelector
+            }
+            if appState.selectedMode == .techExplain {
+                levelSelector
+                if appState.techDictionary.canGoBack {
+                    breadcrumbBar
+                }
             }
             Divider()
             contentArea
@@ -36,6 +43,22 @@ struct FloatingPanelView: View {
             // Tone changed — invalidate improve cache and re-analyze
             appState.cachedResults.removeValue(forKey: .improve)
             onReanalyze?(.improve)
+        }
+        .onChange(of: appState.selectedExplanationLevel) { _, newLevel in
+            guard appState.selectedMode == .techExplain, !appState.isAnalyzing else { return }
+            // Check cache for current term at new level
+            if let current = appState.techDictionary.currentExplanation {
+                if let cached = appState.techDictionary.cachedValue(for: current.term, level: newLevel) {
+                    let explanation = TechExplanation(term: current.term, level: newLevel, explanation: cached.explanation, tldr: cached.tldr, resources: cached.resources)
+                    // Replace top of stack with new level
+                    appState.techDictionary.explanationStack[appState.techDictionary.explanationStack.count - 1] = explanation
+                    let result = AnalysisResult(mode: .techExplain, original: current.term, corrected: current.term, changes: [], explanation: cached.explanation, tldr: cached.tldr, resources: cached.resources)
+                    appState.result = result
+                    appState.cachedResults[.techExplain] = result
+                } else {
+                    onExplainTerm?(current.term)
+                }
+            }
         }
         .onChange(of: appState.isAnalyzing) { wasAnalyzing, isNow in
             // When analysis finishes, check if mode changed during analysis
@@ -94,10 +117,74 @@ struct FloatingPanelView: View {
         .foregroundStyle(isSelected ? .primary : .secondary)
     }
 
+    private var visibleLevels: [ExplanationLevel] {
+        ExplanationLevel.allCases.filter { appState.visibleExplanationLevels.contains($0) }
+    }
+
+    private var levelSelector: some View {
+        HStack(spacing: 4) {
+            ForEach(visibleLevels) { level in
+                tonePill(level.title, isSelected: appState.selectedExplanationLevel == level) {
+                    appState.selectedExplanationLevel = level
+                }
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 4)
+    }
+
+    private var breadcrumbBar: some View {
+        HStack(spacing: 4) {
+            Button {
+                appState.techDictionary.pop()
+                if let current = appState.techDictionary.currentExplanation {
+                    let result = AnalysisResult(mode: .techExplain, original: current.term, corrected: current.term, changes: [], explanation: current.explanation, tldr: current.tldr, resources: current.resources)
+                    appState.result = result
+                    appState.cachedResults[.techExplain] = result
+                }
+            } label: {
+                Image(systemName: "chevron.left")
+                    .font(.caption)
+            }
+            .buttonStyle(.plain)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 2) {
+                    let crumbs = appState.techDictionary.breadcrumbs
+                    ForEach(Array(crumbs.enumerated()), id: \.offset) { index, term in
+                        if index > 0 {
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 8))
+                                .foregroundStyle(.tertiary)
+                        }
+                        Button {
+                            appState.techDictionary.popTo(index: index)
+                            if let current = appState.techDictionary.currentExplanation {
+                                let result = AnalysisResult(mode: .techExplain, original: current.term, corrected: current.term, changes: [], explanation: current.explanation, tldr: current.tldr, resources: current.resources)
+                                appState.result = result
+                                appState.cachedResults[.techExplain] = result
+                            }
+                        } label: {
+                            Text(term)
+                                .font(.system(size: 10))
+                                .foregroundStyle(index == crumbs.count - 1 ? .primary : .secondary)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 4)
+    }
+
     private var contentArea: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
-                if !appState.originalText.isEmpty {
+                // In techExplain mode with drill-down, show current term instead of original text
+                if appState.selectedMode == .techExplain, let current = appState.techDictionary.currentExplanation {
+                    currentTermSection(current.term)
+                } else if !appState.originalText.isEmpty {
                     originalTextSection
                 }
 
@@ -114,6 +201,21 @@ struct FloatingPanelView: View {
             .padding(16)
         }
         .frame(maxHeight: .infinity)
+    }
+
+    private func currentTermSection(_ term: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("Term")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Text(term)
+                .font(.body)
+                .fontWeight(.medium)
+                .padding(8)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(.quaternary)
+                .clipShape(RoundedRectangle(cornerRadius: 6))
+        }
     }
 
     private var originalTextSection: some View {
@@ -160,23 +262,29 @@ struct FloatingPanelView: View {
 
     @ViewBuilder
     private func resultSection(_ result: AnalysisResult) -> some View {
-        SuggestionView(result: result) { card in
-            guard var current = appState.result else { return }
-            // Update corrected text for Apply/Copy
-            current.corrected = current.corrected.replacingOccurrences(
-                of: card.original, with: card.suggestion
-            )
-            // Add to changes so it appears in the diff view
-            current.changes.append(TextChange(
-                original: card.original,
-                replacement: card.suggestion,
-                reason: "\(card.level) vocabulary upgrade"
-            ))
-            // Remove used card
-            current.vocabularyCards?.removeAll { $0.original == card.original }
-            appState.result = current
-            appState.cachedResults[current.mode] = current
-        }
+        SuggestionView(
+            result: result,
+            onUseWord: { card in
+                guard var current = appState.result else { return }
+                // Update corrected text for Apply/Copy
+                current.corrected = current.corrected.replacingOccurrences(
+                    of: card.original, with: card.suggestion
+                )
+                // Add to changes so it appears in the diff view
+                current.changes.append(TextChange(
+                    original: card.original,
+                    replacement: card.suggestion,
+                    reason: "\(card.level) vocabulary upgrade"
+                ))
+                // Remove used card
+                current.vocabularyCards?.removeAll { $0.original == card.original }
+                appState.result = current
+                appState.cachedResults[current.mode] = current
+            },
+            onTermTap: appState.selectedMode == .techExplain ? { term in
+                onExplainTerm?(term)
+            } : nil
+        )
     }
 
     private func errorSection(_ error: QuillError) -> some View {

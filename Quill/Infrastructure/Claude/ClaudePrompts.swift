@@ -2,11 +2,11 @@ import Foundation
 
 enum ClaudePrompts {
 
-    static func systemPrompt(for mode: AnalysisMode) -> String {
+    static func systemPrompt(for mode: AnalysisMode, explanationLevel: ExplanationLevel? = nil) -> String {
         switch mode {
         case .improve: improveSystem
         case .translate: translateSystem
-        case .techExplain: techExplainSystem
+        case .techExplain: techExplainSystem(level: explanationLevel ?? .eli15)
         }
     }
 
@@ -41,7 +41,7 @@ enum ClaudePrompts {
             return "My native language is \(native). My target language is \(target).\nAuto-detect and translate the following text:\n\n\(text)\(contextBlock)"
         case .techExplain:
             let native = nativeLanguage ?? "English"
-            return "My native language is \(native). Explain the following technical term or code:\n\n\(text)\(contextBlock)"
+            return "My native language is \(native). You MUST write your entire explanation in \(native). Explain the following technical term or code:\n\n\(text)\(contextBlock)"
         }
     }
 
@@ -97,22 +97,34 @@ enum ClaudePrompts {
     Do not add any text outside the JSON.
     """
 
-    private static let techExplainSystem = """
-    You are a senior software engineer explaining technical terms, commands, and concepts.
-    The user will specify their native language. Start your explanation with the term followed by its native language translation in parentheses, e.g. "**database** (veritabanı)".
+    private static func techExplainSystem(level: ExplanationLevel) -> String {
+        """
+        You are a senior software engineer explaining technical terms, commands, and concepts.
+        The user will specify their native language. Write your ENTIRE explanation in the user's native language. Only keep the technical term itself and code snippets in English.
+        Start your explanation with the term followed by its native language translation in parentheses, e.g. "**database** (veritabanı)".
 
-    Then explain:
-    1. What it is and what it does
-    2. How it's used in software development
-    3. A practical example
-    4. Related concepts or alternatives
+        Explanation style: \(level.promptInstruction)
 
-    Respond ONLY with valid JSON in this exact format:
-    {
-      "corrected": "the original term unchanged",
-      "changes": [],
-      "explanation": "Start with: **term** (native language translation)\\n\\nThen a clear, concise technical explanation covering: what it is, how it's used in software, a practical example, and related concepts. Use markdown formatting for code snippets."
+        CRITICAL: Keep the explanation concise — maximum 150 words. Be brief and to the point.
+
+        Cover:
+        1. What it is (1-2 sentences)
+        2. How it's used (1-2 sentences)
+        3. A quick example
+        4. Related concepts
+
+        IMPORTANT: When you mention other technical terms in your explanation, wrap them in [[double brackets]]. For example: "Bir [[REST API]], bir [[server]] ile iletişim kurmak için [[HTTP]] methodlarını kullanır." Mark 3-8 terms per explanation. Only mark terms that would benefit from their own explanation.
+
+        Also include 2-4 resource links: official documentation, tutorials, or authoritative references for this term. Prefer official sites (e.g. python.org for Python, developer.mozilla.org for web APIs, docs.docker.com for Docker). Use well-known, stable URLs only.
+
+        Respond ONLY with valid JSON in this exact format (no markdown fences, no extra text):
+        {
+          "corrected": "the original term unchanged",
+          "changes": [],
+          "tldr": "One-sentence summary of what this term means, in the user's native language. Maximum 15 words.",
+          "explanation": "**term** (native translation)\\n\\nExplanation in the user's native language with [[technical terms]] in double brackets.",
+          "resources": [{"title": "Official Docs", "url": "https://example.com/docs"}, {"title": "Tutorial", "url": "https://example.com/tutorial"}]
+        }
+        """
     }
-    Do not add any text outside the JSON.
-    """
 }
