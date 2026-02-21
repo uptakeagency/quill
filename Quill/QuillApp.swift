@@ -13,9 +13,13 @@ struct QuillApp: App {
             Image(systemName: appState.isAnalyzing ? "pencil.and.outline.badge.clock" : "pencil.and.outline")
         }
 
-        Settings {
+        Window("Quill Settings", id: "settings") {
             SettingsView(appState: appState)
+                .onDisappear {
+                    NSApp.setActivationPolicy(.accessory)
+                }
         }
+        .windowResizability(.contentSize)
 
         Window("Welcome to Quill", id: "onboarding") {
             OnboardingView(appState: appState)

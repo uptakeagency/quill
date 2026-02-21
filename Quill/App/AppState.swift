@@ -26,7 +26,7 @@ enum AIBackend: String, CaseIterable, Identifiable {
 
 @Observable
 final class AppState {
-    var selectedMode: AnalysisMode = .improve
+    var selectedMode: AnalysisMode = .techExplain
     var selectedTone: ToneStyle?
     var selectedExplanationLevel: ExplanationLevel = .eli15
     var techDictionary = TechDictionaryState()

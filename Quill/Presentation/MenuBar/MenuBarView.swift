@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MenuBarView: View {
     @Bindable var appState: AppState
+    @Environment(\.openWindow) private var openWindow
 
     var body: some View {
         VStack(spacing: 0) {
@@ -80,7 +81,33 @@ struct MenuBarView: View {
 
     private var actionSection: some View {
         VStack(spacing: 2) {
-            SettingsLink {
+            Button {
+                // Capture mouse location now, before the menu dismisses
+                let mouse = NSEvent.mouseLocation
+                let targetScreen = NSScreen.screens.first(where: { NSMouseInRect(mouse, $0.frame, false) })
+
+                // Clear SwiftUI's saved window position so it doesn't restore
+                UserDefaults.standard.removeObject(forKey: "Quill Settings-AppWindow-1")
+                UserDefaults.standard.removeObject(forKey: "NSWindow Frame Quill Settings")
+
+                openWindow(id: "settings")
+
+                // Reposition after SwiftUI finishes laying out the window
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    NSApp.setActivationPolicy(.regular)
+
+                    if let window = NSApp.windows.first(where: { $0.title == "Quill Settings" }),
+                       let screen = targetScreen {
+                        let x = screen.visibleFrame.midX - window.frame.width / 2
+                        let y = screen.visibleFrame.midY - window.frame.height / 2
+                        window.setFrameOrigin(NSPoint(x: x, y: y))
+                        window.makeKeyAndOrderFront(nil)
+                        window.orderFrontRegardless()
+                    }
+
+                    NSApp.activate(ignoringOtherApps: true)
+                }
+            } label: {
                 HStack {
                     Image(systemName: "gear")
                         .frame(width: 20)
@@ -91,6 +118,7 @@ struct MenuBarView: View {
                         .foregroundStyle(.secondary)
                 }
             }
+            .buttonStyle(.plain)
             .padding(.horizontal, 4)
 
             Divider()
