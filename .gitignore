@@ -6,3 +6,6 @@ DerivedData/
 .swiftpm/
 Package.resolved
 .DS_Store
+.env*
+*.key
+*.pem
