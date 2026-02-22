@@ -69,7 +69,13 @@ Every explanation comes with:
 - macOS 14 (Sonoma) or later
 - An API key for [Google Gemini](https://aistudio.google.com/apikey) (free tier available) or [Anthropic Claude](https://console.anthropic.com/settings/keys)
 
-### From Source
+### Download
+
+**[Download Quill-1.0.0.dmg](https://github.com/uptakeagency/quill/releases/latest)** — Open the DMG, drag to Applications, done.
+
+> Since Quill is not notarized, macOS may show a security warning. Right-click → Open to bypass it.
+
+### Build from Source
 
 ```bash
 git clone https://github.com/uptakeagency/quill.git
@@ -83,15 +89,6 @@ open dist/Quill.app
 1. **Grant Accessibility permission** — System Settings > Privacy & Security > Accessibility
 2. **Add your API key** — Open Settings from the menu bar icon
 3. **Select a term, press `⌃⌥Q`** — that's it
-
-### Stable Code Signing (Optional)
-
-macOS resets Accessibility permissions when the app binary changes. To avoid this during development:
-
-```bash
-./scripts/setup-cert.sh
-./scripts/build-app.sh debug
-```
 
 ## How It Works
 
