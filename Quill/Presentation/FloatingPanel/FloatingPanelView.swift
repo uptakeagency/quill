@@ -107,11 +107,15 @@ struct FloatingPanelView: View {
     private func tonePill(_ label: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(label)
-                .font(.system(size: 10))
-                .padding(.horizontal, 6)
-                .padding(.vertical, 3)
-                .background(isSelected ? Color.accentColor.opacity(0.15) : Color.clear)
-                .clipShape(RoundedRectangle(cornerRadius: 4))
+                .font(.system(size: 12, weight: isSelected ? .semibold : .regular))
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .background(isSelected ? Color.accentColor.opacity(0.2) : Color.clear)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 5)
+                        .stroke(isSelected ? Color.accentColor.opacity(0.5) : Color.secondary.opacity(0.3), lineWidth: 1)
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 5))
         }
         .buttonStyle(.plain)
         .foregroundStyle(isSelected ? .primary : .secondary)
