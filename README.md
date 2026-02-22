@@ -6,6 +6,10 @@ A system-wide tech dictionary for macOS. When AI generates code with terms you d
 
 ![macOS 14+](https://img.shields.io/badge/macOS-14%2B-blue) ![Swift 5.9](https://img.shields.io/badge/Swift-5.9-orange) ![License](https://img.shields.io/badge/license-MIT-green)
 
+<p align="center">
+  <img src="assets/demo.gif" width="600" alt="Quill demo — select a term, get an instant explanation">
+</p>
+
 ## The Problem
 
 AI writes code for you. It uses `WebSocket`, sets up a `Docker` container, configures `nginx` reverse proxy. You nod along, but — *what does half of this actually mean?*
@@ -35,9 +39,18 @@ Pick the depth that fits you:
 | **Samples** | Code examples — 2-3 practical snippets |
 | **Resources** | Learning path — what to study next, common pitfalls |
 
+<p align="center">
+  <img src="assets/ELI5.png" width="380" alt="ELI5 — simple words, fun analogies">
+  <img src="assets/Pro.png" width="380" alt="Pro — trade-offs, patterns, edge cases">
+</p>
+
 ### Drill-Down Navigation
 
 Explanations highlight related terms in `[[brackets]]`. Click one to go deeper. A breadcrumb trail lets you navigate back. You can also **select any text** in the explanation and press the hotkey to explore it — no brackets needed.
+
+<p align="center">
+  <img src="assets/resources.png" width="600" alt="Resources tab with learning path and breadcrumb navigation">
+</p>
 
 ### TL;DR + Resources
 
@@ -88,6 +101,7 @@ open dist/Quill.app
 
 1. **Grant Accessibility permission** — System Settings > Privacy & Security > Accessibility
 2. **Add your API key** — Open Settings from the menu bar icon
+   <p><img src="assets/settings2.png" width="500" alt="Quill Settings — AI backend and API key"></p>
 3. **Select a term, press `⌃⌥Q`** — that's it
 
 ## How It Works
