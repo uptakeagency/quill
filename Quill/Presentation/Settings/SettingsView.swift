@@ -15,7 +15,7 @@ struct SettingsView: View {
                     Label("Shortcuts", systemImage: "keyboard")
                 }
 
-            AppearanceSettingsView()
+            AppearanceSettingsView(appState: appState)
                 .tabItem {
                     Label("Appearance", systemImage: "paintbrush")
                 }
@@ -230,14 +230,102 @@ struct GeneralSettingsView: View {
 }
 
 struct AppearanceSettingsView: View {
+    @Bindable var appState: AppState
+
     var body: some View {
         Form {
-            Section("Panel") {
-                Text("Panel appearance settings will be available in a future update.")
+            Section("Panel Theme") {
+                Picker("Theme", selection: $appState.panelTheme) {
+                    ForEach(PanelTheme.allCases) { theme in
+                        Text(theme.title).tag(theme)
+                    }
+                }
+                .pickerStyle(.radioGroup)
+
+                Text(appState.panelTheme.description)
+                    .font(.caption)
                     .foregroundStyle(.secondary)
+            }
+
+            Section("Color Scheme") {
+                Picker("Colors", selection: $appState.panelColorScheme) {
+                    ForEach(PanelColorScheme.allCases) { scheme in
+                        Text(scheme.title).tag(scheme)
+                    }
+                }
+                .pickerStyle(.radioGroup)
+
+                Text(appState.panelColorScheme.description)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                colorSwatches
+            }
+
+            Section("Preview") {
+                panelPreview
             }
         }
         .formStyle(.grouped)
-        .frame(width: 400, height: 200)
+        .frame(width: 400, height: 400)
+    }
+
+    private var colorSwatches: some View {
+        let a = appState.appearance
+        return HStack(spacing: 8) {
+            swatch(a.tldrBackground, label: "TL;DR")
+            swatch(a.explanationBackground, label: "Explain")
+            swatch(a.resourcesBackground, label: "Resources")
+            swatch(Color.black.opacity(a.codeBlockOpacity), label: "Code")
+        }
+    }
+
+    private func swatch(_ color: Color, label: String) -> some View {
+        VStack(spacing: 2) {
+            RoundedRectangle(cornerRadius: 4)
+                .fill(color)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 4)
+                        .stroke(Color.secondary.opacity(0.3), lineWidth: 1)
+                )
+                .frame(width: 40, height: 24)
+            Text(label)
+                .font(.system(size: 9))
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    private var panelPreview: some View {
+        let a = appState.appearance
+        return VStack(alignment: .leading, spacing: a.sectionSpacing * 0.5) {
+            HStack(spacing: 4) {
+                Image(systemName: "bolt.fill")
+                    .font(.caption2)
+                    .foregroundStyle(a.tldrAccent)
+                Text("Quick summary of the term")
+                    .font(a.contentFont)
+            }
+            .padding(a.sectionPadding)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(a.tldrBackground)
+            .clipShape(RoundedRectangle(cornerRadius: a.cornerRadius * 0.5))
+
+            Text("Detailed explanation with **bold** terms and context about how this technology works in practice.")
+                .font(a.contentFont)
+                .padding(a.sectionPadding)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(a.explanationBackground)
+                .clipShape(RoundedRectangle(cornerRadius: a.cornerRadius * 0.5))
+
+            Text("func example() { ... }")
+                .font(.system(size: a.pillFontSize, design: .monospaced))
+                .padding(a.sectionPadding)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.black.opacity(a.codeBlockOpacity))
+                .clipShape(RoundedRectangle(cornerRadius: a.cornerRadius * 0.5))
+        }
+        .padding(a.contentPadding * 0.5)
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: a.cornerRadius))
     }
 }

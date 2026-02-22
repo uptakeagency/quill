@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SuggestionView: View {
     let result: AnalysisResult
+    var appearance: PanelAppearance = PanelAppearance()
     var onUseWord: ((VocabularyCard) -> Void)?
     var onTermTap: ((String) -> Void)?
 
@@ -11,7 +12,7 @@ struct SuggestionView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: appearance.sectionSpacing) {
             // Result section — diff for corrections, plain text for others
             if usesDiff {
                 diffSection
@@ -79,7 +80,7 @@ struct SuggestionView: View {
 
             let segments = TextDiff.buildSegments(original: result.original, changes: result.changes)
 
-            WrappingHStack(segments: segments)
+            WrappingHStack(segments: segments, appearance: appearance)
                 .padding(8)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(.quaternary)
@@ -99,14 +100,14 @@ struct SuggestionView: View {
                         HStack(spacing: 4) {
                             Text(change.original)
                                 .strikethrough()
-                                .foregroundStyle(.red)
+                                .foregroundStyle(appearance.removedColor)
                             Image(systemName: "arrow.right")
                                 .font(.caption2)
                                 .foregroundStyle(.secondary)
                             Text(change.replacement)
-                                .foregroundStyle(.green)
+                                .foregroundStyle(appearance.addedColor)
                         }
-                        .font(.callout)
+                        .font(appearance.contentFont)
 
                         Text(change.reason)
                             .font(.caption)
@@ -125,14 +126,14 @@ struct SuggestionView: View {
         HStack(spacing: 6) {
             Image(systemName: "bolt.fill")
                 .font(.caption)
-                .foregroundStyle(.orange)
+                .foregroundStyle(appearance.tldrAccent)
             Text(text)
-                .font(.callout)
+                .font(appearance.contentFont)
                 .foregroundStyle(.primary)
         }
-        .padding(8)
+        .padding(appearance.sectionPadding)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.orange.opacity(0.08))
+        .background(appearance.tldrBackground)
         .clipShape(RoundedRectangle(cornerRadius: 6))
     }
 
@@ -149,22 +150,22 @@ struct SuggestionView: View {
                                 Image(systemName: "link")
                                     .font(.caption)
                                 Text(link.title)
-                                    .font(.callout)
+                                    .font(appearance.contentFont)
                                     .lineLimit(1)
                                 Spacer()
                                 Text(url.host ?? "")
                                     .font(.caption2)
                                     .foregroundStyle(.tertiary)
                             }
-                            .foregroundStyle(.blue)
+                            .foregroundStyle(appearance.linkColor)
                         }
                         .buttonStyle(.plain)
                     }
                 }
             }
-            .padding(8)
+            .padding(appearance.sectionPadding)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color.gray.opacity(0.06))
+            .background(appearance.resourcesBackground)
             .clipShape(RoundedRectangle(cornerRadius: 6))
         }
     }
@@ -174,10 +175,10 @@ struct SuggestionView: View {
             Text("Explanation")
                 .font(.caption)
                 .foregroundStyle(.secondary)
-            MarkdownTextView(text: text, onTermTap: onTermTap)
-                .padding(8)
+            MarkdownTextView(text: text, appearance: appearance, onTermTap: onTermTap)
+                .padding(appearance.sectionPadding)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.blue.opacity(0.05))
+                .background(appearance.explanationBackground)
                 .clipShape(RoundedRectangle(cornerRadius: 6))
         }
     }
@@ -186,6 +187,7 @@ struct SuggestionView: View {
 /// Simple text flow layout for diff segments
 struct WrappingHStack: View {
     let segments: [TextDiff.Segment]
+    var appearance: PanelAppearance = PanelAppearance()
 
     var body: some View {
         // Use a simple Text concatenation for inline diff display
@@ -196,10 +198,10 @@ struct WrappingHStack: View {
             case .removed(let text):
                 result + Text(text)
                     .strikethrough()
-                    .foregroundColor(.red)
+                    .foregroundColor(appearance.removedColor)
             case .added(let text):
                 result + Text(text)
-                    .foregroundColor(.green)
+                    .foregroundColor(appearance.addedColor)
                     .fontWeight(.medium)
             }
         }

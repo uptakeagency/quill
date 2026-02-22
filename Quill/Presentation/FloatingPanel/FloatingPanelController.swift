@@ -41,8 +41,8 @@ final class FloatingPanelController {
     var isVisible = false
 
     func show(appState: AppState, onReanalyze: ((AnalysisMode) -> Void)? = nil, onExplainTerm: ((String) -> Void)? = nil) {
-        let panelWidth: CGFloat = 420
-        let panelHeight: CGFloat = 380
+        let panelWidth = appState.appearance.panelWidth
+        let panelHeight = appState.appearance.panelHeight
 
         let contentRect = positionNearCursor(width: panelWidth, height: panelHeight)
 

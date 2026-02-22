@@ -5,6 +5,7 @@ import SwiftUI
 /// and clickable [[term]] links for tech dictionary drill-down.
 struct MarkdownTextView: View {
     let text: String
+    var appearance: PanelAppearance = PanelAppearance()
     var onTermTap: ((String) -> Void)?
 
     var body: some View {
@@ -146,9 +147,9 @@ struct MarkdownTextView: View {
         case .codeBlock(let code):
             Text(code)
                 .font(.system(.caption, design: .monospaced))
-                .padding(8)
+                .padding(appearance.sectionPadding)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(.black.opacity(0.2))
+                .background(.black.opacity(appearance.codeBlockOpacity))
                 .clipShape(RoundedRectangle(cornerRadius: 4))
                 .textSelection(.enabled)
 
@@ -158,7 +159,7 @@ struct MarkdownTextView: View {
                     .foregroundStyle(.secondary)
                 Text(attr)
             }
-            .font(.callout)
+            .font(appearance.contentFont)
 
         case .numberedItem(let num, let attr):
             HStack(alignment: .top, spacing: 6) {
@@ -167,11 +168,11 @@ struct MarkdownTextView: View {
                     .frame(width: 18, alignment: .trailing)
                 Text(attr)
             }
-            .font(.callout)
+            .font(appearance.contentFont)
 
         case .paragraph(let attr):
             Text(attr)
-                .font(.callout)
+                .font(appearance.contentFont)
         }
     }
 }

@@ -25,9 +25,9 @@ struct FloatingPanelView: View {
             Divider()
             actionBar
         }
-        .frame(width: 420, height: 380)
+        .frame(width: appState.appearance.panelWidth, height: appState.appearance.panelHeight)
         .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .clipShape(RoundedRectangle(cornerRadius: appState.appearance.cornerRadius))
         .onChange(of: appState.selectedMode) { _, newMode in
             guard !appState.originalText.isEmpty else { return }
             // Use cached result if available, otherwise re-analyze
@@ -85,7 +85,7 @@ struct FloatingPanelView: View {
             }
             .buttonStyle(.plain)
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, appState.appearance.contentPadding)
         .padding(.vertical, 10)
     }
 
@@ -105,15 +105,16 @@ struct FloatingPanelView: View {
     }
 
     private func tonePill(_ label: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
+        let a = appState.appearance
+        return Button(action: action) {
             Text(label)
-                .font(.system(size: 12, weight: isSelected ? .semibold : .regular))
+                .font(.system(size: a.pillFontSize, weight: isSelected ? .semibold : .regular))
                 .padding(.horizontal, 10)
                 .padding(.vertical, 5)
-                .background(isSelected ? Color.accentColor.opacity(0.2) : Color.clear)
+                .background(isSelected ? a.pillSelectedBackground : Color.clear)
                 .overlay(
                     RoundedRectangle(cornerRadius: 5)
-                        .stroke(isSelected ? Color.accentColor.opacity(0.5) : Color.secondary.opacity(0.3), lineWidth: 1)
+                        .stroke(isSelected ? a.pillSelectedBorder : a.pillUnselectedBorder, lineWidth: 1)
                 )
                 .clipShape(RoundedRectangle(cornerRadius: 5))
         }
@@ -202,7 +203,7 @@ struct FloatingPanelView: View {
                     emptySection
                 }
             }
-            .padding(16)
+            .padding(appState.appearance.contentPadding)
         }
         .frame(maxHeight: .infinity)
     }
@@ -268,6 +269,7 @@ struct FloatingPanelView: View {
     private func resultSection(_ result: AnalysisResult) -> some View {
         SuggestionView(
             result: result,
+            appearance: appState.appearance,
             onUseWord: { card in
                 guard var current = appState.result else { return }
                 // Update corrected text for Apply/Copy
@@ -368,7 +370,7 @@ struct FloatingPanelView: View {
                 Spacer()
             }
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, appState.appearance.contentPadding)
         .padding(.vertical, 10)
     }
 }

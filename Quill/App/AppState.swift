@@ -45,6 +45,16 @@ final class AppState {
     var geminiModel: String = "gemini-2.5-flash" {
         didSet { UserDefaults.standard.set(geminiModel, forKey: "geminiModel") }
     }
+    var panelTheme: PanelTheme = .comfortable {
+        didSet { UserDefaults.standard.set(panelTheme.rawValue, forKey: "panelTheme") }
+    }
+    var panelColorScheme: PanelColorScheme = .standard {
+        didSet { UserDefaults.standard.set(panelColorScheme.rawValue, forKey: "panelColorScheme") }
+    }
+
+    var appearance: PanelAppearance {
+        PanelAppearance(theme: panelTheme, colorScheme: panelColorScheme)
+    }
     var availableGeminiModels: [String] = [
         "gemini-2.5-flash",
         "gemini-2.5-flash-lite",
@@ -121,6 +131,14 @@ final class AppState {
         }
         if let model = UserDefaults.standard.string(forKey: "geminiModel") {
             geminiModel = model
+        }
+        if let theme = UserDefaults.standard.string(forKey: "panelTheme"),
+           let parsed = PanelTheme(rawValue: theme) {
+            panelTheme = parsed
+        }
+        if let scheme = UserDefaults.standard.string(forKey: "panelColorScheme"),
+           let parsed = PanelColorScheme(rawValue: scheme) {
+            panelColorScheme = parsed
         }
     }
 
