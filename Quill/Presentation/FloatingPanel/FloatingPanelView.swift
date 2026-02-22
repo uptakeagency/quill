@@ -4,7 +4,7 @@ struct FloatingPanelView: View {
     @Bindable var appState: AppState
     var onDismiss: () -> Void
     var onReanalyze: ((AnalysisMode) -> Void)?
-    var onExplainTerm: ((String) -> Void)?
+    var onExplainTerm: ((String, _ isLevelSwitch: Bool) -> Void)?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -56,7 +56,7 @@ struct FloatingPanelView: View {
                     appState.result = result
                     appState.cachedResults[.techExplain] = result
                 } else {
-                    onExplainTerm?(current.term)
+                    onExplainTerm?(current.term, true)
                 }
             }
         }
@@ -288,7 +288,7 @@ struct FloatingPanelView: View {
                 appState.cachedResults[current.mode] = current
             },
             onTermTap: appState.selectedMode == .techExplain ? { term in
-                onExplainTerm?(term)
+                onExplainTerm?(term, false)
             } : nil
         )
     }

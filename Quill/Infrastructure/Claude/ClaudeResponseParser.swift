@@ -14,35 +14,53 @@ enum ClaudeResponseParser {
     static func parse(response: String, mode: AnalysisMode, originalText: String) -> AnalysisResult {
         let cleaned = extractJSON(from: response)
 
+        var result: AnalysisResult?
+
         // Try Codable first
-        if let result = decodeCodable(cleaned, mode: mode, originalText: originalText) {
-            return result
-        }
+        result = decodeCodable(cleaned, mode: mode, originalText: originalText)
 
         // Try sanitizing (escape literal newlines inside JSON strings)
-        let sanitized = sanitizeJSON(cleaned)
-        if sanitized != cleaned, let result = decodeCodable(sanitized, mode: mode, originalText: originalText) {
-            Log.ai.info("Parsed response after JSON sanitization")
-            return result
-        }
+        if result == nil {
+            let sanitized = sanitizeJSON(cleaned)
+            if sanitized != cleaned {
+                result = decodeCodable(sanitized, mode: mode, originalText: originalText)
+                if result != nil { Log.ai.info("Parsed response after JSON sanitization") }
+            }
 
-        // Try lenient JSONSerialization
-        if let result = decodeSerialization(sanitized, mode: mode, originalText: originalText) {
-            Log.ai.info("Parsed response via JSONSerialization fallback")
-            return result
+            // Try lenient JSONSerialization
+            if result == nil {
+                result = decodeSerialization(sanitized, mode: mode, originalText: originalText)
+                if result != nil { Log.ai.info("Parsed response via JSONSerialization fallback") }
+            }
         }
 
         // Last resort: regex extract the explanation field directly
-        if let explanation = extractExplanationField(from: cleaned) {
+        if result == nil, let explanation = extractExplanationField(from: cleaned) {
             Log.ai.info("Extracted explanation via regex fallback")
-            return AnalysisResult(
+            result = AnalysisResult(
                 mode: mode, original: originalText,
                 corrected: originalText, changes: [],
                 explanation: explanation, tldr: nil, resources: nil, vocabularyCards: nil
             )
         }
 
-        return fallbackResult(cleaned, mode: mode, originalText: originalText)
+        var final = result ?? fallbackResult(cleaned, mode: mode, originalText: originalText)
+
+        // Normalize double-escaped newlines/tabs in explanation text
+        if let explanation = final.explanation {
+            final.explanation = normalizeEscapes(explanation)
+        }
+        if let tldr = final.tldr {
+            final.tldr = normalizeEscapes(tldr)
+        }
+
+        return final
+    }
+
+    /// Convert literal \n and \t sequences to real characters
+    private static func normalizeEscapes(_ text: String) -> String {
+        text.replacingOccurrences(of: "\\n", with: "\n")
+            .replacingOccurrences(of: "\\t", with: "\t")
     }
 
     // MARK: - Decoders

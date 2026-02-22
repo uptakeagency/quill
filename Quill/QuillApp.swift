@@ -117,7 +117,7 @@ struct QuillApp: App {
             FloatingPanelController.shared.show(
                 appState: appState,
                 onReanalyze: { [self] newMode in reanalyze(mode: newMode) },
-                onExplainTerm: { [self] term in explainTerm(term) }
+                onExplainTerm: { [self] term, isLevelSwitch in explainTerm(term, isLevelSwitch: isLevelSwitch) }
             )
 
             await performAnalysis(text: finalText, mode: appState.selectedMode)
@@ -162,17 +162,21 @@ struct QuillApp: App {
         return nil
     }
 
-    private func explainTerm(_ term: String) {
+    private func explainTerm(_ term: String, isLevelSwitch: Bool = false) {
         Task { @MainActor in
-            await performTechExplain(term: term, level: appState.selectedExplanationLevel)
+            await performTechExplain(term: term, level: appState.selectedExplanationLevel, isLevelSwitch: isLevelSwitch)
         }
     }
 
-    private func performTechExplain(term: String, level: ExplanationLevel) async {
+    private func performTechExplain(term: String, level: ExplanationLevel, isLevelSwitch: Bool = false) async {
         // Check cache first
         if let cached = appState.techDictionary.cachedValue(for: term, level: level) {
             let explanation = TechExplanation(term: term, level: level, explanation: cached.explanation, tldr: cached.tldr, resources: cached.resources)
-            appState.techDictionary.push(explanation)
+            if isLevelSwitch {
+                appState.techDictionary.replaceTop(explanation)
+            } else {
+                appState.techDictionary.push(explanation)
+            }
             let result = AnalysisResult(mode: .techExplain, original: term, corrected: term, changes: [], explanation: cached.explanation, tldr: cached.tldr, resources: cached.resources)
             appState.result = result
             appState.cachedResults[.techExplain] = result
@@ -198,7 +202,11 @@ struct QuillApp: App {
             guard !Task.isCancelled else { return }
             let explanationText = result.explanation ?? ""
             let explanation = TechExplanation(term: term, level: level, explanation: explanationText, tldr: result.tldr, resources: result.resources)
-            appState.techDictionary.push(explanation)
+            if isLevelSwitch {
+                appState.techDictionary.replaceTop(explanation)
+            } else {
+                appState.techDictionary.push(explanation)
+            }
             appState.result = result
             appState.cachedResults[.techExplain] = result
         } catch let apiError as APIError {

@@ -50,6 +50,19 @@ final class TechDictionaryState {
         saveCache()
     }
 
+    /// Replace top of stack (used when switching levels for the same term)
+    func replaceTop(_ explanation: TechExplanation) {
+        guard !explanationStack.isEmpty else {
+            push(explanation)
+            return
+        }
+        explanationStack[explanationStack.count - 1] = explanation
+        let key = TechCacheKey(term: explanation.term, level: explanation.level)
+        let value = TechCacheValue(explanation: explanation.explanation, tldr: explanation.tldr, resources: explanation.resources)
+        cache[key] = value
+        saveCache()
+    }
+
     func pop() {
         guard canGoBack else { return }
         explanationStack.removeLast()

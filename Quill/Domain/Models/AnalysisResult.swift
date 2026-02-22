@@ -5,8 +5,8 @@ struct AnalysisResult: Equatable {
     let original: String
     var corrected: String
     var changes: [TextChange]
-    let explanation: String?
-    let tldr: String?
+    var explanation: String?
+    var tldr: String?
     let resources: [ResourceLink]?
     var vocabularyCards: [VocabularyCard]?
 

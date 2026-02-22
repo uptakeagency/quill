@@ -42,8 +42,14 @@ struct MarkdownTextView: View {
     // MARK: - Parser
 
     private func parseBlocks() -> [Block] {
+        // Normalize literal \n and \t escape sequences to real characters.
+        // AI sometimes double-escapes these in JSON responses.
+        let normalized = text
+            .replacingOccurrences(of: "\\n", with: "\n")
+            .replacingOccurrences(of: "\\t", with: "\t")
+
         var blocks: [Block] = []
-        let lines = text.components(separatedBy: "\n")
+        let lines = normalized.components(separatedBy: "\n")
         var i = 0
 
         while i < lines.count {

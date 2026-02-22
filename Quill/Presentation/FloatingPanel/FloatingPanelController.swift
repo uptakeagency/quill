@@ -40,7 +40,7 @@ final class FloatingPanelController {
     private var escMonitor: Any?
     var isVisible = false
 
-    func show(appState: AppState, onReanalyze: ((AnalysisMode) -> Void)? = nil, onExplainTerm: ((String) -> Void)? = nil) {
+    func show(appState: AppState, onReanalyze: ((AnalysisMode) -> Void)? = nil, onExplainTerm: ((String, _ isLevelSwitch: Bool) -> Void)? = nil) {
         let panelWidth = appState.appearance.panelWidth
         let panelHeight = appState.appearance.panelHeight
 
