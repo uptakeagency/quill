@@ -6,6 +6,7 @@ struct TechExplanation: Equatable {
     var explanation: String
     var tldr: String?
     var resources: [ResourceLink]?
+    var alternatives: [Alternative]?
 }
 
 struct TechCacheKey: Hashable, Codable {
@@ -17,6 +18,7 @@ struct TechCacheValue: Equatable, Codable {
     let explanation: String
     let tldr: String?
     let resources: [ResourceLink]?
+    let alternatives: [Alternative]?
 }
 
 @Observable
@@ -45,7 +47,7 @@ final class TechDictionaryState {
     func push(_ explanation: TechExplanation) {
         explanationStack.append(explanation)
         let key = TechCacheKey(term: explanation.term, level: explanation.level)
-        let value = TechCacheValue(explanation: explanation.explanation, tldr: explanation.tldr, resources: explanation.resources)
+        let value = TechCacheValue(explanation: explanation.explanation, tldr: explanation.tldr, resources: explanation.resources, alternatives: explanation.alternatives)
         cache[key] = value
         saveCache()
     }
@@ -58,7 +60,7 @@ final class TechDictionaryState {
         }
         explanationStack[explanationStack.count - 1] = explanation
         let key = TechCacheKey(term: explanation.term, level: explanation.level)
-        let value = TechCacheValue(explanation: explanation.explanation, tldr: explanation.tldr, resources: explanation.resources)
+        let value = TechCacheValue(explanation: explanation.explanation, tldr: explanation.tldr, resources: explanation.resources, alternatives: explanation.alternatives)
         cache[key] = value
         saveCache()
     }

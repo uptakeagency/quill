@@ -25,8 +25,8 @@ struct SuggestionView: View {
                 changesSection
             }
 
-            // TL;DR (techExplain mode)
-            if let tldr = result.tldr, !tldr.isEmpty {
+            // TL;DR — shown in FloatingPanelView header for techExplain, inline for others
+            if result.mode != .techExplain, let tldr = result.tldr, !tldr.isEmpty {
                 tldrSection(tldr)
             }
 
@@ -38,6 +38,11 @@ struct SuggestionView: View {
             // Resource links (techExplain mode)
             if let resources = result.resources, !resources.isEmpty {
                 resourcesSection(resources)
+            }
+
+            // Alternatives (dedicated tab)
+            if let alternatives = result.alternatives, !alternatives.isEmpty {
+                alternativesSection(alternatives)
             }
 
             // Vocabulary cards
@@ -161,6 +166,55 @@ struct SuggestionView: View {
                         }
                         .buttonStyle(.plain)
                     }
+                }
+            }
+            .padding(appearance.sectionPadding)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(appearance.resourcesBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 6))
+        }
+    }
+
+    private func alternativesSection(_ alternatives: [Alternative]) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("Alternatives")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 6) {
+                ForEach(alternatives) { alt in
+                    VStack(alignment: .leading, spacing: 3) {
+                        HStack(spacing: 4) {
+                            if let onTermTap {
+                                Button {
+                                    onTermTap(alt.name)
+                                } label: {
+                                    Text(alt.name)
+                                        .font(appearance.contentFont.bold())
+                                        .foregroundStyle(appearance.linkColor)
+                                }
+                                .buttonStyle(.plain)
+                            } else {
+                                Text(alt.name)
+                                    .font(appearance.contentFont.bold())
+                            }
+                            Text("— \(alt.description)")
+                                .font(appearance.contentFont)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                        }
+                        HStack(spacing: 12) {
+                            Label(alt.pros, systemImage: "plus.circle.fill")
+                                .font(.caption)
+                                .foregroundStyle(.green)
+                            Label(alt.cons, systemImage: "minus.circle.fill")
+                                .font(.caption)
+                                .foregroundStyle(.orange)
+                        }
+                    }
+                    .padding(6)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(.quaternary.opacity(0.5))
+                    .clipShape(RoundedRectangle(cornerRadius: 4))
                 }
             }
             .padding(appearance.sectionPadding)

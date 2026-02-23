@@ -36,8 +36,9 @@ Pick the depth that fits you:
 | **ELI5** | Total beginners — simple words, fun analogies |
 | **ELI15** | Learning to code — clear language, some technical terms |
 | **Pro** | Experienced devs — trade-offs, patterns, edge cases |
-| **Samples** | Code examples — 2-3 practical snippets |
+| **Samples** | Code examples — 2-3 practical, runnable snippets |
 | **Resources** | Learning path — what to study next, common pitfalls |
+| **Alts** | Alternatives & competitors — pros/cons comparison |
 
 <p align="center">
   <img src="assets/ELI5.png" width="380" alt="ELI5 — simple words, fun analogies">
@@ -52,10 +53,10 @@ Explanations highlight related terms in `[[brackets]]`. Click one to go deeper. 
   <img src="assets/resources.png" width="600" alt="Resources tab with learning path and breadcrumb navigation">
 </p>
 
-### TL;DR + Resources
+### Persistent TL;DR + Resources
 
 Every explanation comes with:
-- A **one-line TL;DR** summary at the top
+- A **one-line TL;DR** pinned above the tabs — always visible when switching levels
 - **Resource links** to official docs, tutorials, and references
 
 ### Also Included
@@ -117,9 +118,9 @@ You select "WebSocket" in VS Code
         ↓
   Floating panel appears near cursor
         ↓
-  You see: TL;DR → Explanation → Resources
+  You see: TL;DR → Explanation → Resources → Alternatives
         ↓
-  Click [[HTTP]] in the explanation → drill deeper
+  Click [[HTTP]] in the explanation or an alternative → drill deeper
         ↓
   Breadcrumb: WebSocket > HTTP (navigate back anytime)
 ```

@@ -98,7 +98,15 @@ enum ClaudePrompts {
     """
 
     private static func techExplainSystem(level: ExplanationLevel) -> String {
-        """
+        switch level {
+        case .alternatives:
+            return techExplainAlternativesSystem
+        case .samples:
+            return techExplainSamplesSystem
+        default:
+            break
+        }
+        return """
         You are a senior software engineer explaining technical terms, commands, and concepts.
         The user will specify their native language. Write your ENTIRE explanation in the user's native language. Only keep the technical term itself and code snippets in English.
         Start your explanation with the term followed by its native language translation in parentheses, e.g. "**database** (veritabanı)".
@@ -127,4 +135,53 @@ enum ClaudePrompts {
         }
         """
     }
+
+    private static let techExplainSamplesSystem = """
+    You are a senior software engineer providing practical code examples.
+    The user will specify their native language. Write comments and explanations in the user's native language. Keep code in English.
+
+    Provide 2-3 practical, runnable code examples showing how this term/concept is used in real code.
+    Go from simple to advanced. Each example should have:
+    - A short heading (e.g. "### Basic Usage", "### Advanced: With Error Handling")
+    - A code block with the snippet
+    - A 1-2 sentence explanation of what the code does, in the user's native language
+
+    IMPORTANT: When you mention other technical terms, wrap them in [[double brackets]].
+
+    Respond ONLY with valid JSON in this exact format (no markdown fences, no extra text):
+    {
+      "corrected": "the original term unchanged",
+      "changes": [],
+      "tldr": "One-sentence summary of what this term means, in the user's native language. Maximum 15 words.",
+      "explanation": "**term** (native translation)\\n\\n### Basic Usage\\n```language\\ncode here\\n```\\nExplanation of this example.\\n\\n### Advanced\\n```language\\nmore code\\n```\\nExplanation.",
+      "resources": []
+    }
+    """
+
+    private static let techExplainAlternativesSystem = """
+    You are a senior software engineer comparing technical tools and technologies.
+    The user will specify their native language. Write ALL descriptions, pros, and cons in the user's native language. Keep tool/library names in English.
+
+    For the given term, list 3-5 alternatives or competitors. For each alternative provide:
+    - name: The tool/library/technology name (English)
+    - description: One-line description of what it is (native language)
+    - pros: 1-2 key advantages (native language)
+    - cons: 1-2 key disadvantages (native language)
+
+    Also include a brief explanation of the original term for context.
+
+    IMPORTANT: When you mention other technical terms in your explanation, wrap them in [[double brackets]].
+
+    Respond ONLY with valid JSON in this exact format (no markdown fences, no extra text):
+    {
+      "corrected": "the original term unchanged",
+      "changes": [],
+      "tldr": "One-sentence summary of what this term means, in the user's native language. Maximum 15 words.",
+      "explanation": "**term** (native translation) — brief context about what this tool does and why you might look for alternatives.",
+      "resources": [],
+      "alternatives": [
+        {"name": "AlternativeName", "description": "What it is in native language", "pros": "Key advantages", "cons": "Key disadvantages"}
+      ]
+    }
+    """
 }

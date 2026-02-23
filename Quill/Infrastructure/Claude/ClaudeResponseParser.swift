@@ -9,6 +9,7 @@ enum ClaudeResponseParser {
         let explanation: String?
         let tldr: String?
         let resources: [ResourceLink]?
+        let alternatives: [Alternative]?
     }
 
     static func parse(response: String, mode: AnalysisMode, originalText: String) -> AnalysisResult {
@@ -40,7 +41,8 @@ enum ClaudeResponseParser {
             result = AnalysisResult(
                 mode: mode, original: originalText,
                 corrected: originalText, changes: [],
-                explanation: explanation, tldr: nil, resources: nil, vocabularyCards: nil
+                explanation: explanation, tldr: nil, resources: nil,
+                alternatives: nil, vocabularyCards: nil
             )
         }
 
@@ -73,6 +75,7 @@ enum ClaudeResponseParser {
             corrected: parsed.corrected, changes: parsed.changes,
             explanation: parsed.explanation, tldr: parsed.tldr,
             resources: parsed.resources,
+            alternatives: mode == .techExplain ? parsed.alternatives : nil,
             vocabularyCards: mode == .improve ? parsed.vocabulary : nil
         )
     }
@@ -97,10 +100,20 @@ enum ClaudeResponseParser {
                 return ResourceLink(title: title, url: url)
             }
         }
+        var alternatives: [Alternative]?
+        if let arr = obj["alternatives"] as? [[String: String]] {
+            alternatives = arr.compactMap { d in
+                guard let name = d["name"], let desc = d["description"],
+                      let pros = d["pros"], let cons = d["cons"] else { return nil }
+                return Alternative(name: name, description: desc, pros: pros, cons: cons)
+            }
+        }
         return AnalysisResult(
             mode: mode, original: originalText,
             corrected: corrected, changes: changes,
-            explanation: explanation, tldr: tldr, resources: resources, vocabularyCards: nil
+            explanation: explanation, tldr: tldr, resources: resources,
+            alternatives: mode == .techExplain ? alternatives : nil,
+            vocabularyCards: nil
         )
     }
 
@@ -218,7 +231,7 @@ enum ClaudeResponseParser {
             corrected: isExplanationMode ? originalText : trimmed,
             changes: [],
             explanation: isExplanationMode ? trimmed : nil, tldr: nil,
-            resources: nil, vocabularyCards: nil
+            resources: nil, alternatives: nil, vocabularyCards: nil
         )
     }
 }

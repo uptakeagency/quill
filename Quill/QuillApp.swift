@@ -171,13 +171,13 @@ struct QuillApp: App {
     private func performTechExplain(term: String, level: ExplanationLevel, isLevelSwitch: Bool = false) async {
         // Check cache first
         if let cached = appState.techDictionary.cachedValue(for: term, level: level) {
-            let explanation = TechExplanation(term: term, level: level, explanation: cached.explanation, tldr: cached.tldr, resources: cached.resources)
+            let explanation = TechExplanation(term: term, level: level, explanation: cached.explanation, tldr: cached.tldr, resources: cached.resources, alternatives: cached.alternatives)
             if isLevelSwitch {
                 appState.techDictionary.replaceTop(explanation)
             } else {
                 appState.techDictionary.push(explanation)
             }
-            let result = AnalysisResult(mode: .techExplain, original: term, corrected: term, changes: [], explanation: cached.explanation, tldr: cached.tldr, resources: cached.resources)
+            let result = AnalysisResult(mode: .techExplain, original: term, corrected: term, changes: [], explanation: cached.explanation, tldr: cached.tldr, resources: cached.resources, alternatives: cached.alternatives)
             appState.result = result
             appState.cachedResults[.techExplain] = result
             return
@@ -201,7 +201,7 @@ struct QuillApp: App {
             )
             guard !Task.isCancelled else { return }
             let explanationText = result.explanation ?? ""
-            let explanation = TechExplanation(term: term, level: level, explanation: explanationText, tldr: result.tldr, resources: result.resources)
+            let explanation = TechExplanation(term: term, level: level, explanation: explanationText, tldr: result.tldr, resources: result.resources, alternatives: result.alternatives)
             if isLevelSwitch {
                 appState.techDictionary.replaceTop(explanation)
             } else {

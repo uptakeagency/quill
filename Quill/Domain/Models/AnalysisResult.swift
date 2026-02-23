@@ -8,6 +8,7 @@ struct AnalysisResult: Equatable {
     var explanation: String?
     var tldr: String?
     let resources: [ResourceLink]?
+    var alternatives: [Alternative]?
     var vocabularyCards: [VocabularyCard]?
 
     static func == (lhs: AnalysisResult, rhs: AnalysisResult) -> Bool {
@@ -46,5 +47,17 @@ struct VocabularyCard: Codable, Identifiable {
 
     enum CodingKeys: String, CodingKey {
         case original, suggestion, definition, example, level
+    }
+}
+
+struct Alternative: Codable, Identifiable, Equatable {
+    var id = UUID()
+    let name: String
+    let description: String
+    let pros: String
+    let cons: String
+
+    enum CodingKeys: String, CodingKey {
+        case name, description, pros, cons
     }
 }

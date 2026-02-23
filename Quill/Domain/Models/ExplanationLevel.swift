@@ -6,6 +6,7 @@ enum ExplanationLevel: String, CaseIterable, Identifiable, Codable {
     case professional
     case samples
     case resources
+    case alternatives
 
     var id: String { rawValue }
 
@@ -16,6 +17,7 @@ enum ExplanationLevel: String, CaseIterable, Identifiable, Codable {
         case .professional: "Pro"
         case .samples: "Samples"
         case .resources: "Resources"
+        case .alternatives: "Alts"
         }
     }
 
@@ -26,6 +28,7 @@ enum ExplanationLevel: String, CaseIterable, Identifiable, Codable {
         case .professional: "briefcase"
         case .samples: "curlybraces"
         case .resources: "book"
+        case .alternatives: "arrow.triangle.branch"
         }
     }
 
@@ -41,6 +44,8 @@ enum ExplanationLevel: String, CaseIterable, Identifiable, Codable {
             "Provide 2-3 practical code examples showing how this term/concept is used in real code. Each example should be a short, runnable snippet with a one-line comment explaining what it does. Focus on common use cases from simple to advanced."
         case .resources:
             "Be very concise. In 3-5 bullet points, list: what to learn first, one common pitfall, and 2-3 related concepts. Keep each bullet to one sentence. Do NOT write long paragraphs."
+        case .alternatives:
+            "Focus ONLY on alternatives and competitors for this term. List 3-5 alternatives, each with a one-line description, 1-2 pros, and 1-2 cons. Write the description, pros, and cons in the user's native language."
         }
     }
 

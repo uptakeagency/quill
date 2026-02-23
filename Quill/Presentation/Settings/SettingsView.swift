@@ -203,6 +203,7 @@ struct GeneralSettingsView: View {
         case .professional: "Advanced, with trade-offs and patterns"
         case .samples: "Practical code examples"
         case .resources: "Learning path and best practices"
+        case .alternatives: "Competitors and alternatives with pros/cons"
         }
     }
 

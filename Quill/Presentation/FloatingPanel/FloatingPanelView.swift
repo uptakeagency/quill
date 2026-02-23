@@ -15,6 +15,9 @@ struct FloatingPanelView: View {
                 toneSelector
             }
             if appState.selectedMode == .techExplain {
+                if let tldr = appState.techDictionary.currentExplanation?.tldr ?? appState.result?.tldr, !tldr.isEmpty {
+                    persistentTldr(tldr)
+                }
                 levelSelector
                 if appState.techDictionary.canGoBack {
                     breadcrumbBar
@@ -49,10 +52,10 @@ struct FloatingPanelView: View {
             // Check cache for current term at new level
             if let current = appState.techDictionary.currentExplanation {
                 if let cached = appState.techDictionary.cachedValue(for: current.term, level: newLevel) {
-                    let explanation = TechExplanation(term: current.term, level: newLevel, explanation: cached.explanation, tldr: cached.tldr, resources: cached.resources)
+                    let explanation = TechExplanation(term: current.term, level: newLevel, explanation: cached.explanation, tldr: cached.tldr, resources: cached.resources, alternatives: cached.alternatives)
                     // Replace top of stack with new level
                     appState.techDictionary.explanationStack[appState.techDictionary.explanationStack.count - 1] = explanation
-                    let result = AnalysisResult(mode: .techExplain, original: current.term, corrected: current.term, changes: [], explanation: cached.explanation, tldr: cached.tldr, resources: cached.resources)
+                    let result = AnalysisResult(mode: .techExplain, original: current.term, corrected: current.term, changes: [], explanation: cached.explanation, tldr: cached.tldr, resources: cached.resources, alternatives: cached.alternatives)
                     appState.result = result
                     appState.cachedResults[.techExplain] = result
                 } else {
@@ -143,7 +146,7 @@ struct FloatingPanelView: View {
             Button {
                 appState.techDictionary.pop()
                 if let current = appState.techDictionary.currentExplanation {
-                    let result = AnalysisResult(mode: .techExplain, original: current.term, corrected: current.term, changes: [], explanation: current.explanation, tldr: current.tldr, resources: current.resources)
+                    let result = AnalysisResult(mode: .techExplain, original: current.term, corrected: current.term, changes: [], explanation: current.explanation, tldr: current.tldr, resources: current.resources, alternatives: current.alternatives)
                     appState.result = result
                     appState.cachedResults[.techExplain] = result
                 }
@@ -165,7 +168,7 @@ struct FloatingPanelView: View {
                         Button {
                             appState.techDictionary.popTo(index: index)
                             if let current = appState.techDictionary.currentExplanation {
-                                let result = AnalysisResult(mode: .techExplain, original: current.term, corrected: current.term, changes: [], explanation: current.explanation, tldr: current.tldr, resources: current.resources)
+                                let result = AnalysisResult(mode: .techExplain, original: current.term, corrected: current.term, changes: [], explanation: current.explanation, tldr: current.tldr, resources: current.resources, alternatives: current.alternatives)
                                 appState.result = result
                                 appState.cachedResults[.techExplain] = result
                             }
@@ -206,6 +209,22 @@ struct FloatingPanelView: View {
             .padding(appState.appearance.contentPadding)
         }
         .frame(maxHeight: .infinity)
+    }
+
+    private func persistentTldr(_ text: String) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: "bolt.fill")
+                .font(.caption)
+                .foregroundStyle(appState.appearance.tldrAccent)
+            Text(text)
+                .font(appState.appearance.contentFont)
+                .foregroundStyle(.primary)
+                .lineLimit(2)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(appState.appearance.tldrBackground)
     }
 
     private func currentTermSection(_ term: String) -> some View {

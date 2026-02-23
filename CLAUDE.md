@@ -35,11 +35,14 @@ Hexagonal (Ports & Adapters) with clean separation:
 - **Brace-matching JSON extraction**: Depth-tracking parser instead of `lastIndex(of: "}")`
 - **Vision OCR with error handling**: `do/catch` in `performOCR` to prevent continuation hangs
 - **`defer` for isAnalyzing**: Guarantees reset on all code paths including cancellation
+- **Persistent TL;DR**: Shown above level tabs in FloatingPanelView, sourced from `currentExplanation.tldr` so it survives tab switches
+- **Alternative model**: `Alternative` struct (name, description, pros, cons) with clickable names for drill-down
 
 ## Key Patterns
 
 - **TechDictionaryState**: Stack-based drill-down with breadcrumbs, Codable cache persisted to UserDefaults
-- **ExplanationLevel**: 5 levels (ELI5, ELI15, Pro, Samples, Resources) with configurable visibility
+- **ExplanationLevel**: 6 levels (ELI5, ELI15, Pro, Samples, Resources, Alternatives) with configurable visibility
+- **Dedicated prompts**: Samples and Alternatives have their own system prompts (not the shared template) for better output quality
 - **`[[term]]` links**: AI marks related terms, converted to `quill://explain/` URLs via NSRegularExpression with percent-encoding
 - **Panel text selection + hotkey**: NSTextView hierarchy traversal for drill-down without brackets
 - **Settings multi-screen**: `openWindow(id:)` + clear saved state + reposition to mouse screen + activation policy toggle
