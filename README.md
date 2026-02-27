@@ -59,11 +59,17 @@ Every explanation comes with:
 - A **one-line TL;DR** pinned above the tabs — always visible when switching levels
 - **Resource links** to official docs, tutorials, and references
 
-### Also Included
+### Bonus: Not Just a Dictionary
 
-- **Improve mode** — grammar, spelling, punctuation fixes with inline diff
-- **Translate mode** — auto-detect and translate between languages
-- **Vocabulary cards** — learn richer word alternatives with CEFR levels
+A system-wide **Improve** and **Translate** tool would already be useful on its own. Quill includes both — and then adds a full-blown Tech Dictionary on top.
+
+| Mode | What it does |
+|------|-------------|
+| **Improve** | Fixes grammar, spelling & punctuation. Shows an inline diff so you see exactly what changed — then apply with one click. |
+| **Translate** | Auto-detects the source language and translates. Select text in any app, get the translation instantly. |
+| **Tech Dictionary** | The star of the show — 6 explanation levels, drill-down navigation, TL;DR, resources, alternatives. |
+
+All three modes work system-wide with the same hotkey. Switch between them from the menu bar.
 
 ## Why Quill?
 
