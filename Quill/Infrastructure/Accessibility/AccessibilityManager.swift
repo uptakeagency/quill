@@ -39,7 +39,7 @@ final class AccessibilityManager: TextCaptureProtocol {
         // Activate source app first so AX targets the correct element
         if let app = sourceApp {
             app.activate()
-            try? await Task.sleep(for: .milliseconds(150))
+            try? await Task.sleep(for: .milliseconds(500))
         }
 
         if replaceSelectedTextViaAX(text) {
@@ -133,13 +133,29 @@ final class AccessibilityManager: TextCaptureProtocol {
             return false
         }
 
+        let axElement = element as! AXUIElement
+
+        // Read current selection before attempting write
+        var selectedText: AnyObject?
+        AXUIElementCopyAttributeValue(axElement, kAXSelectedTextAttribute as CFString, &selectedText)
+        let originalSelection = selectedText as? String ?? ""
+
         let setResult = AXUIElementSetAttributeValue(
-            element as! AXUIElement,
+            axElement,
             kAXSelectedTextAttribute as CFString,
             text as CFTypeRef
         )
 
-        return setResult == .success
+        guard setResult == .success else {
+            return false
+        }
+
+        // Verify the text actually changed (Electron apps report success but don't apply)
+        var verifyText: AnyObject?
+        AXUIElementCopyAttributeValue(axElement, kAXSelectedTextAttribute as CFString, &verifyText)
+        let afterText = verifyText as? String ?? ""
+
+        return afterText != originalSelection
     }
 
     // MARK: - Clipboard Fallback
@@ -182,8 +198,8 @@ final class AccessibilityManager: TextCaptureProtocol {
         // Simulate Cmd+V
         simulateKeyPress(key: .v, modifiers: .maskCommand)
 
-        // Small delay for paste to complete
-        try? await Task.sleep(for: .milliseconds(100))
+        // Wait for paste to complete (Electron apps need more time)
+        try? await Task.sleep(for: .milliseconds(500))
 
         // Restore previous clipboard contents
         pasteboard.clearContents()

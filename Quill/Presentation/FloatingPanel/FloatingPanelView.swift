@@ -378,8 +378,11 @@ struct FloatingPanelView: View {
                     Button("Apply") {
                         Task {
                             if let corrected = appState.result?.corrected {
+                                let sourceApp = appState.sourceApp
+                                // Dismiss panel first so source app regains full focus
                                 onDismiss()
-                                _ = await AccessibilityManager.shared.replaceSelectedText(with: corrected, in: appState.sourceApp)
+                                try? await Task.sleep(for: .milliseconds(100))
+                                _ = await AccessibilityManager.shared.replaceSelectedText(with: corrected, in: sourceApp)
                             }
                         }
                     }
