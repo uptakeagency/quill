@@ -211,6 +211,9 @@ final class ScreenTextCapture {
 
             let image = try await SCScreenshotManager.captureImage(contentFilter: filter, configuration: config)
             return image
+        } catch let error as NSError where error.domain == "com.apple.ScreenCaptureKit" && error.code == -3801 {
+            Log.general.error("Screen Recording permission not granted. Open System Settings > Privacy & Security > Screen Recording.")
+            return nil
         } catch {
             Log.general.error("ScreenCaptureKit error: \(error.localizedDescription)")
             return nil
@@ -219,7 +222,17 @@ final class ScreenTextCapture {
 
     private func recognizeAndFindWord(in image: CGImage, cursorNormX: CGFloat, cursorNormY: CGFloat) async -> CapturedText? {
         let observations = await performOCR(on: image)
-        guard !observations.isEmpty else { return nil }
+        guard !observations.isEmpty else {
+            Log.general.info("Vision OCR returned zero observations for captured screen region")
+            return nil
+        }
+
+        // Log low-confidence results to surface auto-detection issues
+        for observation in observations {
+            if let candidate = observation.topCandidates(1).first, candidate.confidence < 0.5 {
+                Log.general.info("Low OCR confidence (\(candidate.confidence)) for: '\(candidate.string.prefix(30))'")
+            }
+        }
 
         // Collect all text for context
         let allText = observations.compactMap { $0.topCandidates(1).first?.string }.joined(separator: " ")
@@ -235,7 +248,13 @@ final class ScreenTextCapture {
             let words = wordRanges(in: sentence)
 
             for (word, range) in words {
-                guard let wordBox = try? candidate.boundingBox(for: range) else { continue }
+                let wordBox: VNRectangleObservation
+                do {
+                    wordBox = try candidate.boundingBox(for: range)
+                } catch {
+                    Log.general.debug("boundingBox failed for word '\(word)': \(error.localizedDescription)")
+                    continue
+                }
                 let box = wordBox.boundingBox
 
                 // Check if cursor is inside word box
@@ -262,13 +281,18 @@ final class ScreenTextCapture {
 
     private func performOCR(on image: CGImage) async -> [VNRecognizedTextObservation] {
         await withCheckedContinuation { continuation in
-            let request = VNRecognizeTextRequest { request, _ in
+            let request = VNRecognizeTextRequest { request, error in
+                if let error {
+                    Log.general.error("Vision OCR request error: \(error.localizedDescription)")
+                }
                 let results = request.results as? [VNRecognizedTextObservation] ?? []
                 continuation.resume(returning: results)
             }
             request.recognitionLevel = .accurate
+            // Language correction depends on correct auto-detection; if Vision misidentifies
+            // the language, correction may degrade quality. Confidence logging below helps surface this.
             request.usesLanguageCorrection = true
-            request.recognitionLanguages = ["en", "tr"]
+            request.automaticallyDetectsLanguage = true
 
             let handler = VNImageRequestHandler(cgImage: image, options: [:])
             do {
