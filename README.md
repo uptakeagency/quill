@@ -6,6 +6,8 @@ A system-wide tech dictionary for macOS. When AI generates code with terms you d
 
 ![macOS 14+](https://img.shields.io/badge/macOS-14%2B-blue) ![Swift 5.9](https://img.shields.io/badge/Swift-5.9-orange) ![License](https://img.shields.io/badge/license-MIT-green)
 
+> **Windows version available:** [quill-windows](https://github.com/uptakeagency/quill-windows) — built with Tauri v2 + Rust + React
+
 <p align="center">
   <img src="assets/demo.gif" width="600" alt="Quill demo — select a term, get an instant explanation">
 </p>
