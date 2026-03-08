@@ -69,7 +69,7 @@ struct GeneralSettingsView: View {
                 Section("Gemini Model") {
                     Picker("Model", selection: $appState.geminiModel) {
                         ForEach(appState.availableGeminiModels, id: \.self) { model in
-                            Text(model).tag(model)
+                            Text(Self.geminiModelLabel(model)).tag(model)
                         }
                     }
 
@@ -207,6 +207,20 @@ struct GeneralSettingsView: View {
         }
     }
 
+    private static func geminiModelLabel(_ id: String) -> String {
+        switch id {
+        case "gemini-3.1-pro-preview": "\(id) — reasoning, agentic"
+        case "gemini-3.1-flash-lite-preview": "\(id) — cost-efficient, fast"
+        case "gemini-3-flash-preview": "\(id) — frontier, visual"
+        case "gemini-2.5-pro": "\(id) — advanced, stable"
+        case "gemini-2.5-flash": "\(id) — balanced, stable"
+        case "gemini-2.5-flash-lite": "\(id) — budget, stable"
+        default:
+            if id.contains("preview") { "\(id) — preview" }
+            else { id }
+        }
+    }
+
     private func fetchLatestModels() {
         guard let key = KeychainManager.shared.getGeminiKey() else { return }
         appState.isFetchingModels = true
@@ -218,7 +232,7 @@ struct GeneralSettingsView: View {
                         appState.availableGeminiModels = models
                         // Keep current selection if still available
                         if !models.contains(appState.geminiModel) {
-                            appState.geminiModel = models.first ?? "gemini-2.5-flash"
+                            appState.geminiModel = models.first ?? "gemini-3.1-pro-preview"
                         }
                     }
                     appState.isFetchingModels = false

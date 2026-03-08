@@ -5,7 +5,7 @@ final class GeminiService: AIServiceProtocol {
     private let apiKey: String
     private let model: String
 
-    init(apiKey: String, model: String = "gemini-2.5-flash") {
+    init(apiKey: String, model: String = "gemini-3.1-pro-preview") {
         self.apiKey = apiKey
         self.model = model
     }
@@ -103,9 +103,13 @@ final class GeminiService: AIServiceProtocol {
             guard id.hasPrefix("gemini-"),
                   !id.contains("image"),
                   !id.contains("tts"),
+                  !id.contains("audio"),
                   !id.contains("computer-use"),
                   !id.contains("robotics"),
-                  !id.contains("exp-") else { return nil }
+                  !id.contains("embedding") else { return nil }
+            // Skip old deprecated 1.x and 2.0 models
+            guard !id.hasPrefix("gemini-1."),
+                  !id.hasPrefix("gemini-2.0") else { return nil }
             return id
         }.sorted().reversed()  // newest first
     }

@@ -17,7 +17,7 @@ enum AIBackend: String, CaseIterable, Identifiable {
 
     var description: String {
         switch self {
-        case .gemini: "Google Gemini 2.0 Flash - fast and free tier available"
+        case .gemini: "Google Gemini 2.5 Flash - fast and free tier available"
         case .claudeCLI: "Uses installed claude command - no API key needed"
         case .claudeAPI: "Direct API calls - requires API key, supports streaming"
         }
@@ -42,7 +42,7 @@ final class AppState {
     var targetLanguage: String = "English" {
         didSet { UserDefaults.standard.set(targetLanguage, forKey: "targetLanguage") }
     }
-    var geminiModel: String = "gemini-2.5-flash" {
+    var geminiModel: String = "gemini-3.1-pro-preview" {
         didSet { UserDefaults.standard.set(geminiModel, forKey: "geminiModel") }
     }
     var panelTheme: PanelTheme = .comfortable {
@@ -56,13 +56,12 @@ final class AppState {
         PanelAppearance(theme: panelTheme, colorScheme: panelColorScheme)
     }
     var availableGeminiModels: [String] = [
-        "gemini-2.5-flash",
-        "gemini-2.5-flash-lite",
-        "gemini-2.5-pro",
+        "gemini-3.1-pro-preview",
+        "gemini-3.1-flash-lite-preview",
         "gemini-3-flash-preview",
-        "gemini-3-pro-preview",
-        "gemini-2.0-flash",
-        "gemini-2.0-flash-lite"
+        "gemini-2.5-pro",
+        "gemini-2.5-flash",
+        "gemini-2.5-flash-lite"
     ]
     var isFetchingModels = false
     var isAnalyzing = false
