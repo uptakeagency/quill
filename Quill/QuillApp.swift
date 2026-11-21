@@ -39,6 +39,60 @@ struct QuillApp: App {
             handleHotkeyTrigger()
         }
         HotkeyManager.shared.register()
+
+        // System Look Up gesture'larını paralel dinle (Ctrl+⌘+D + Force Touch).
+        // Event tüketilmiyor — Apple Look Up panel'i normal açılır, Quill aynı anda tetiklenir.
+        // ÖNEMLİ: Bu yol selection-only — OCR fallback yok. Finder/Quick Look gibi text olmayan
+        // bağlamlarda yanlış tetikleme önlenir.
+        LookupGestureMonitor.shared.onLookupTriggered = { [self] in
+            handleSelectionOnlyTrigger()
+        }
+        LookupGestureMonitor.shared.start()
+    }
+
+    /// Sistem Look Up gesture'ları (Ctrl+⌘+D, Force Touch) için: sadece AX selection varsa
+    /// Quill panel'i aç. Selection boşsa sessiz ignore — Finder/Quick Look context'lerinde
+    /// yanlış tetikleme yok.
+    private func handleSelectionOnlyTrigger() {
+        appState.analysisTask?.cancel()
+        appState.analysisTask = Task { @MainActor in
+            let sourceApp = NSWorkspace.shared.frontmostApplication
+            appState.hasAccessibilityPermission = PermissionChecker.shared.isTrusted
+
+            guard appState.hasAccessibilityPermission else {
+                Log.general.info("Lookup gesture: accessibility izni yok, ignore")
+                return
+            }
+
+            // Sadece AX selection — OCR fallback yok
+            guard let selection = await AccessibilityManager.shared.getSelectionWithContext() else {
+                Log.general.info("Lookup gesture: AX selection yok, ignore")
+                return
+            }
+            let text = selection.selectedText.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !text.isEmpty else {
+                Log.general.info("Lookup gesture: selection boş, ignore")
+                return
+            }
+
+            appState.reset()
+            appState.sourceApp = sourceApp
+            appState.originalText = text
+            if let surrounding = selection.surroundingText, surrounding != text {
+                appState.sentenceContext = surrounding
+            }
+
+            // Tech Dictionary modunda aç — Look Up gesture'ı genelde "bu kelime ne demek" niyeti
+            appState.selectedMode = .techExplain
+
+            FloatingPanelController.shared.show(
+                appState: appState,
+                onReanalyze: { [self] newMode in reanalyze(mode: newMode) },
+                onExplainTerm: { [self] term, isLevelSwitch in explainTerm(term, isLevelSwitch: isLevelSwitch) }
+            )
+
+            await performTechExplain(term: text, level: appState.selectedExplanationLevel)
+        }
     }
 
     private func checkPermissions() {

@@ -8,25 +8,43 @@ struct FloatingPanelView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            // Üstte minimal close button
             header
-            Divider()
-            ModePickerView(selectedMode: $appState.selectedMode)
+
+            // TL;DR sol-border ile content'ten ÖNCE — kelimenin hemen altında okunsun
+            if appState.selectedMode == .techExplain,
+               let tldr = appState.techDictionary.currentExplanation?.tldr ?? appState.result?.tldr,
+               !tldr.isEmpty {
+                persistentTldr(tldr)
+            }
+
+            // techExplain mode'da breadcrumb (drill-down geçmişi)
+            if appState.selectedMode == .techExplain, appState.techDictionary.canGoBack {
+                breadcrumbBar
+            }
+
+            // Tone selector improve mode'da content'in üstünde
             if appState.selectedMode == .improve {
                 toneSelector
             }
+
+            // Level selector techExplain mode'da content'in üstünde
             if appState.selectedMode == .techExplain {
-                if let tldr = appState.techDictionary.currentExplanation?.tldr ?? appState.result?.tldr, !tldr.isEmpty {
-                    persistentTldr(tldr)
-                }
                 levelSelector
-                if appState.techDictionary.canGoBack {
-                    breadcrumbBar
-                }
             }
-            Divider()
+
+            // İçerik
             contentArea
-            Divider()
-            actionBar
+
+            // İçerik üretildiyse Copy/Apply satırı
+            if copyText != nil {
+                Divider().opacity(0.3)
+                actionBar
+            }
+
+            // Apple Look Up panel'i diline yakın bottom tab bar
+            Divider().opacity(0.3)
+            ModePickerView(selectedMode: $appState.selectedMode)
         }
         .frame(width: appState.appearance.panelWidth, height: appState.appearance.panelHeight)
         .background(.ultraThinMaterial)
@@ -75,21 +93,20 @@ struct FloatingPanelView: View {
         }
     }
 
+    // Sade header — Look Up panel'inde brand görünmez, sadece kapama kontrolü
     private var header: some View {
         HStack {
-            Image(systemName: "pencil.and.outline")
-                .foregroundStyle(.blue)
-            Text("Quill")
-                .font(.headline)
             Spacer()
             Button(action: onDismiss) {
                 Image(systemName: "xmark.circle.fill")
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 13))
+                    .foregroundStyle(.tertiary)
             }
             .buttonStyle(.plain)
         }
         .padding(.horizontal, appState.appearance.contentPadding)
-        .padding(.vertical, 10)
+        .padding(.top, 8)
+        .padding(.bottom, 2)
     }
 
     private var toneSelector: some View {
@@ -211,65 +228,65 @@ struct FloatingPanelView: View {
         .frame(maxHeight: .infinity)
     }
 
+    // Apple Dictionary'nin highlight bloku diline yakın: sol renkli border + sade text
     private func persistentTldr(_ text: String) -> some View {
-        HStack(spacing: 6) {
-            Image(systemName: "bolt.fill")
-                .font(.caption)
-                .foregroundStyle(appState.appearance.tldrAccent)
+        HStack(alignment: .top, spacing: 0) {
+            Rectangle()
+                .fill(appState.appearance.tldrAccent)
+                .frame(width: 2)
             Text(text)
-                .font(appState.appearance.contentFont)
+                .font(.system(size: 13, weight: .regular))
                 .foregroundStyle(.primary)
-                .lineLimit(2)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(appState.appearance.tldrBackground)
+        .padding(.horizontal, appState.appearance.contentPadding)
+        .padding(.vertical, 4)
     }
 
+    // Tech mode: terim büyük h1 başlık olarak — Apple Dictionary diline yakın
     private func currentTermSection(_ term: String) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("Term")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+        VStack(alignment: .leading, spacing: 2) {
             Text(term)
-                .font(.body)
-                .fontWeight(.medium)
-                .padding(8)
+                .font(.system(size: 24, weight: .semibold, design: .default))
+                .foregroundStyle(.primary)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(.quaternary)
-                .clipShape(RoundedRectangle(cornerRadius: 6))
+            Text("tech term")
+                .font(.system(size: 12).italic())
+                .foregroundStyle(.secondary)
         }
+        .padding(.bottom, 2)
     }
 
+    // Diğer modlar: orijinal metni native dictionary entry başlığı gibi göster
     private var originalTextSection: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("Original")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+        VStack(alignment: .leading, spacing: 2) {
             Text(appState.originalText)
-                .font(.body)
-                .padding(8)
+                .font(.system(size: 22, weight: .semibold, design: .default))
+                .foregroundStyle(.primary)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(.quaternary)
-                .clipShape(RoundedRectangle(cornerRadius: 6))
+                .textSelection(.enabled)
 
             if !appState.sentenceContext.isEmpty && appState.sentenceContext != appState.originalText {
-                DisclosureGroup("Context") {
+                DisclosureGroup {
                     Text(appState.sentenceContext.count > 300
                          ? String(appState.sentenceContext.prefix(300)) + "..."
                          : appState.sentenceContext)
-                        .font(.caption)
+                        .font(.system(size: 12))
                         .foregroundStyle(.secondary)
-                        .padding(6)
+                        .padding(.top, 4)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(.quaternary.opacity(0.5))
-                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                } label: {
+                    Text("Context")
+                        .font(.system(size: 11))
+                        .foregroundStyle(.tertiary)
                 }
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .padding(.top, 2)
             }
         }
+        .padding(.bottom, 2)
     }
 
     private var loadingSection: some View {
@@ -363,36 +380,45 @@ struct FloatingPanelView: View {
         }
     }
 
+    // Native dictionary alt action satırı: kompakt, içerik varsa görünür
+    @ViewBuilder
     private var actionBar: some View {
-        HStack {
-            if let text = copyText {
-                Button("Copy") {
+        if let text = copyText {
+            HStack(spacing: 10) {
+                Button {
                     NSPasteboard.general.clearContents()
                     NSPasteboard.general.setString(text, forType: .string)
+                } label: {
+                    Label("Copy", systemImage: "doc.on.doc")
+                        .font(.system(size: 11))
+                        .labelStyle(.titleAndIcon)
                 }
+                .buttonStyle(.plain)
+                .foregroundStyle(.secondary)
 
                 Spacer()
 
-                // Apply only for modes that produce replacement text
                 if appState.result?.mode != .techExplain {
-                    Button("Apply") {
+                    Button {
                         Task {
                             if let corrected = appState.result?.corrected {
                                 let sourceApp = appState.sourceApp
-                                // Dismiss panel first so source app regains full focus
                                 onDismiss()
                                 try? await Task.sleep(for: .milliseconds(100))
                                 _ = await AccessibilityManager.shared.replaceSelectedText(with: corrected, in: sourceApp)
                             }
                         }
+                    } label: {
+                        Label("Apply", systemImage: "arrow.right.circle.fill")
+                            .font(.system(size: 11, weight: .medium))
+                            .labelStyle(.titleAndIcon)
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.blue)
                 }
-            } else {
-                Spacer()
             }
+            .padding(.horizontal, appState.appearance.contentPadding)
+            .padding(.vertical, 6)
         }
-        .padding(.horizontal, appState.appearance.contentPadding)
-        .padding(.vertical, 10)
     }
 }

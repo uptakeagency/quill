@@ -1,32 +1,39 @@
 import SwiftUI
 
+/// Apple Look Up panel'in alt tab bar'ına yakın görsel:
+/// kompakt, seçili sekme koyu pill bg ile vurgulu, ikon küçük + altta etiket.
 struct ModePickerView: View {
     @Binding var selectedMode: AnalysisMode
 
     var body: some View {
-        HStack(spacing: 2) {
+        HStack(spacing: 4) {
             ForEach(AnalysisMode.allCases) { mode in
                 Button {
                     withAnimation(.easeInOut(duration: 0.15)) {
                         selectedMode = mode
                     }
                 } label: {
-                    VStack(spacing: 2) {
+                    HStack(spacing: 5) {
                         Image(systemName: mode.icon)
-                            .font(.system(size: 14))
+                            .font(.system(size: 11, weight: .medium))
                         Text(mode.title)
-                            .font(.system(size: 10))
+                            .font(.system(size: 11, weight: selectedMode == mode ? .semibold : .regular))
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 6)
-                    .background(selectedMode == mode ? Color.accentColor.opacity(0.15) : Color.clear)
-                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(
+                        selectedMode == mode
+                            ? AnyShapeStyle(.quaternary)
+                            : AnyShapeStyle(Color.clear)
+                    )
+                    .clipShape(Capsule())
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(selectedMode == mode ? .primary : .secondary)
             }
         }
-        .padding(.horizontal, 12)
+        .padding(.horizontal, 10)
         .padding(.vertical, 6)
+        .frame(maxWidth: .infinity)
     }
 }

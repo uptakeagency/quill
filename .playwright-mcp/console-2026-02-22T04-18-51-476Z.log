@@ -1,0 +1,4 @@
+[    4911ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ https://www.reddit.com/login/?dest=https%3A%2F%2Fwww.reddit.com%2Fr%2Fmacapps%2Fsubmit%2F:0
+[   30074ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://www.reddit.com/svc/shreddit/account/login/check_is_oidc_required:0
+[   32600ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://www.reddit.com/svc/shreddit/account/login:0
+[   48321ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://www.reddit.com/svc/shreddit/account/login/check_is_oidc_required:0
